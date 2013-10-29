@@ -2,7 +2,7 @@
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
-  <annotatorImplementationName>edu.cmu.lti.qalab.answer_selection.AnswerSelectionByKCandAggregation</annotatorImplementationName>
+  <annotatorImplementationName>edu.cmu.lti.deiis.hw5.answer_selection.AnswerSelectionByKCandAggregation</annotatorImplementationName>
   <analysisEngineMetaData>
     <name>AnswerSelectionByKCandAggregationDescriptior</name>
     <description/>
