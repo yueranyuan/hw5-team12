@@ -1,4 +1,0 @@
-class: edu.cmu.lti.qalab.annotators.NoiseFilter
-QUALITY_THRESHOLD: 0.75
-MIN_WORDS: 5
-MIN_LENGTH: 25

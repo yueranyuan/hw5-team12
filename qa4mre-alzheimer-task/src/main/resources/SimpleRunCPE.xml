@@ -2,9 +2,9 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="SynonymAnnotator">
+    <!-- <delegateAnalysisEngine key="SynonymAnnotator">
       <import location="annotators/SynonymAnnotator.xml"/>
-    </delegateAnalysisEngine>
+    </delegateAnalysisEngine>-->
     <delegateAnalysisEngine key="StanfordNLPAnnotator">
       <import location="annotators/StanfordNLPAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -20,9 +20,9 @@
     <delegateAnalysisEngine key="PhraseAnnotator">
       <import location="annotators/PhraseAnnotator.xml"/>
     </delegateAnalysisEngine>
-    <delegateAnalysisEngine key="QASynonymAnnotator">
+    <!-- <delegateAnalysisEngine key="QASynonymAnnotator">
       <import location="annotators/QASynonymAnnotator.xml"/>
-    </delegateAnalysisEngine>
+    </delegateAnalysisEngine>-->
     <delegateAnalysisEngine key="StanfordQuestionNLPAnnotator">
       <import location="annotators/StanfordQuestionNLPAnnotator.xml"/>
     </delegateAnalysisEngine>
@@ -81,8 +81,8 @@
         <node>QuestionPhraseAnnotator</node>
         <node>NEAnnotator</node>
         <node>QuestionNEAnnotator</node>
-        <node>SynonymAnnotator</node>
-        <node>QASynonymAnnotator</node>
+        <!-- <node>SynonymAnnotator</node>-->
+        <!-- <node>QASynonymAnnotator</node>-->
         <node>SolrIndexer</node>
         <node>QuestionCandSentSimilarityMatcher</node>
         <!-- <node>QuestionCandSentSynonymMatcher</node> -->        

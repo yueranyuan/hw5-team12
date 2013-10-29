@@ -43,7 +43,7 @@ public class QA4MRETestDocReader extends CollectionReader_ImplBase {
 	@Override
 	public void initialize() throws ResourceInitializationException {
 		try {
-			// System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
 			File inputDir = new File(
 					(String) getConfigParameterValue("INPUT_DIR"));
 			testFile = inputDir.listFiles(new OnlyNXML("xml"));
@@ -88,7 +88,6 @@ public class QA4MRETestDocReader extends CollectionReader_ImplBase {
 				.getElementsByTagName("doc");
 
 		String docText = testDocNodeList.item(0).getTextContent().trim();
-		// System.out.println("**************Lines in documenttext: "+docText.split("[\\n]").length);
 
 		String testDocId = ((Element) testDocNodeList.item(0))
 				.getAttribute("d_id");
@@ -272,8 +271,8 @@ public class QA4MRETestDocReader extends CollectionReader_ImplBase {
 		// return nCurrFile < 10;
 		// return nCurrFile < testFile.length;
 		if (nCurrFile < testFile.length && nCurrDoc < documents.getLength()) {
-			System.out.println("***********True: currFile " + nCurrFile
-					+ "\tcurrDoc " + nCurrDoc);
+			//System.out.println("***********True: currFile " + nCurrFile
+				//	+ "\tcurrDoc " + nCurrDoc);
 			return true;
 		}
 		return false;
