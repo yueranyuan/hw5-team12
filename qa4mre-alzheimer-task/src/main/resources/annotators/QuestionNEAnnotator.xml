@@ -8,6 +8,8 @@
     <description/>
     <version>1.0</version>
     <vendor/>
+    <configurationParameters/>
+    <configurationParameterSettings/>
     <!-- <configurationParameters>
       <configurationParameter>
         <name>NOISE_THRESHOLD</name>
