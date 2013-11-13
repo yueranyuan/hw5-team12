@@ -86,7 +86,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 					
 					
 					double totalScore = candAns.getSimilarityScore()
-							+ candAns.getSynonymScore() + candAns.getPMIScore();
+							+ candAns.getSynonymScore() + 0.00001 * candAns.getPMIScore();
 					
 					System.out.println(answer + ", "+ String.valueOf(totalScore));
 					
@@ -99,7 +99,9 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 				if (existingVal == null) {
 					existingVal = new Double(0.0);
 				}
-				hshAnswer.put(selectedAnswer, existingVal + 1.0);
+				//hshAnswer.put(selectedAnswer, existingVal + 1);
+				// Modified by Haibo
+				hshAnswer.put(selectedAnswer, existingVal + candSent.getRelevanceScore());
 			}
 
 			String bestChoice = null;
