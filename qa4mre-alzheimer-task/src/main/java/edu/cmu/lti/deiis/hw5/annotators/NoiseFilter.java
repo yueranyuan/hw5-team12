@@ -38,7 +38,7 @@ public class NoiseFilter extends JCasAnnotator_ImplBase {
 		MIN_WORDS=(Integer)context.getConfigParameterValue("MIN_WORDS");
 		MIN_LENGTH=(Integer)context.getConfigParameterValue("MIN_LENGTH");
 	}
-	
+	/**
 	private ArrayList<Integer> readFakeAnnotations(String docId) {
 	  ArrayList<Integer> ids = new ArrayList<Integer>();
 	  
@@ -70,14 +70,16 @@ public class NoiseFilter extends JCasAnnotator_ImplBase {
 	  
 	  return ids;
 	}
+	*/
 	
+	// don't do any filtering because I noise filtered by hand
 	 @Override
 	 public void process(JCas jCas) throws AnalysisEngineProcessException {
 	    TestDocument testDoc = (TestDocument) Utils.getTestDocumentFromCAS(jCas);
 
 	    String id = testDoc.getId();
 	    ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
-	    ArrayList<Integer> ids = readFakeAnnotations(id);
+	    //ArrayList<Integer> ids = readFakeAnnotations(id);
 	    //System.out.println(ids);
 	    FSList sentList=testDoc.getSentenceList();
       String filteredText = "";
