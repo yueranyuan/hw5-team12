@@ -86,7 +86,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 					
 					
 					double totalScore = candAns.getSimilarityScore()
-							+ candAns.getSynonymScore() + 0.00001 * candAns.getPMIScore();
+							+ candAns.getSynonymScore() + candAns.getPMIScore();
 					
 					System.out.println(answer + ", "+ String.valueOf(totalScore));
 					
