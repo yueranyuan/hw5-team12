@@ -16,7 +16,6 @@
         <multiValued>false</multiValued>
         <mandatory>false</mandatory>
       </configurationParameter>
-      
     </configurationParameters>
     <configurationParameterSettings>
       <nameValuePair>
