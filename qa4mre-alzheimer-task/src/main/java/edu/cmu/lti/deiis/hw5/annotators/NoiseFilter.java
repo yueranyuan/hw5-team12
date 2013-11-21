@@ -71,7 +71,7 @@ public class NoiseFilter extends JCasAnnotator_ImplBase {
 	  return ids;
 	}
 	*/
-	
+	/*
 	// don't do any filtering because I noise filtered by hand
 	 @Override
 	 public void process(JCas jCas) throws AnalysisEngineProcessException {
@@ -107,8 +107,9 @@ public class NoiseFilter extends JCasAnnotator_ImplBase {
       testDoc.setFilteredText(filteredText);
       testDoc.addToIndexes();
 	  }
-	
-	public void processOriginal(JCas jCas) throws AnalysisEngineProcessException {
+	*/
+	@Override
+	public void process(JCas jCas) throws AnalysisEngineProcessException {
 		System.out.println("******Entered into process of NoiseFilter");
 		TestDocument testDoc=Utils.getTestDocumentFromCAS(jCas);
 		//String id = srcDoc.getId();

@@ -55,7 +55,7 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 		String testDocId=testDoc.getId();
 		ArrayList<Sentence>sentenceList=Utils.getSentenceListFromTestDocCAS(aJCas);
 		ArrayList<QuestionAnswerSet>qaSet=Utils.getQuestionAnswerSetFromTestDocCAS(aJCas);
-		
+		System.out.println(sentenceList.size() + "******************");
 		for(int i=0;i<qaSet.size();i++){
 			
 			
@@ -75,7 +75,7 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 			try {
 				SolrDocumentList results=solrWrapper.runQuery(solrQuery, TOP_SEARCH_RESULTS);
 				for(int j=0;j<results.size();j++){
-					SolrDocument doc=results.get(j);					
+					SolrDocument doc=results.get(j);
 					String sentId=doc.get("id").toString();
 					String docId=doc.get("docid").toString();
 					if(!testDocId.equals(docId)){
@@ -83,6 +83,7 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 					}
 					String sentIdx=sentId.replace(docId,"").replace("_", "").trim();
 					int idx=Integer.parseInt(sentIdx);
+					System.out.println(idx + "*********************");
 					Sentence annSentence=sentenceList.get(idx);
 					
 					String sentence=doc.get("text").toString();
@@ -125,7 +126,6 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 			solrQuery+="namedentities:\""+neList.get(i).getText()+"\" ";
 		}
 		solrQuery=solrQuery.trim();
-		
 		
 		return solrQuery;
 	}

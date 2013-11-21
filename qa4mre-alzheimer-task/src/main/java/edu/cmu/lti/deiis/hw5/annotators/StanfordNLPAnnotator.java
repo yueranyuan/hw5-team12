@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -25,8 +26,11 @@ import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.Label;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphEdge;
@@ -122,6 +126,30 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				fsDependencyList.addToIndexes();
 				// Dependency dependency = new Dependency(jCas);
 				// System.out.println("Dependencies: "+dependencies);
+				
+				// experimental parser
+				Tree tree = sentence.get(TreeAnnotation.class);
+				
+				
+				for (Tree subtree : tree) { 
+			    if (subtree.label().value().equals("NP")) {
+			      System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+			    }
+				}
+				
+				/*
+				Set<Tree> subtrees = tree.subTrees();
+        Iterator<Tree> tIter = subtrees.iterator();
+				while (tIter.hasNext()) {
+				  Tree t = tIter.next();
+				  Collection<Label> labels = t.labels();
+				  Iterator<Label> lIter = labels.iterator();
+				  while (lIter.hasNext()) {
+				    Label l = lIter.next();
+				    l.value();
+				  }
+				}
+				*/
 
 				annSentence.setId(String.valueOf(sentNo));
 				annSentence.setBegin(tokenList.get(0).getBegin());// begin of
