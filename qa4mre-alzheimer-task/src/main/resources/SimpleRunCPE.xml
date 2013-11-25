@@ -65,6 +65,9 @@
       <import location="annotators/AnswerSelectionByKCandAggregation.xml"/>
     </delegateAnalysisEngine> -->
     
+  <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
+      <import name="annotators.AnswerSelectionByKCandVoting"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>CpeDescriptor</name>

@@ -38,11 +38,13 @@ public class QuestionPhraseAnnotator extends JCasAnnotator_ImplBase{
 		for(int i=0;i<questionList.size();i++){
 			
 			Question question=questionList.get(i);
+			/*
 			ArrayList<Token>tokenList= Utils.getTokenListFromQuestion(question);
 			ArrayList<NounPhrase>phraseList=extractNounPhrases(tokenList,aJCas);
 			FSList fsPhraseList=Utils.createNounPhraseList(aJCas, phraseList);
 			fsPhraseList.addToIndexes(aJCas);
 			question.setNounList(fsPhraseList);
+			*/
 			question.addToIndexes();
 			questionList.set(i, question);
 		}
@@ -52,11 +54,13 @@ public class QuestionPhraseAnnotator extends JCasAnnotator_ImplBase{
 			ArrayList<Answer> choiceList=answerList.get(i);
 			for(int j=0;j<choiceList.size();j++){
 				Answer ans=choiceList.get(j);
+				/*
 				ArrayList<Token>tokenList= Utils.fromFSListToCollection(ans.getTokenList(),Token.class);
 				ArrayList<NounPhrase>phraseList=extractNounPhrases(tokenList,aJCas);
 				FSList fsPhraseList=Utils.createNounPhraseList(aJCas, phraseList);
 				fsPhraseList.addToIndexes(aJCas);							
 				ans.setNounPhraseList(fsPhraseList);
+				*/
 				ans.addToIndexes();
 				choiceList.set(j, ans);
 			}

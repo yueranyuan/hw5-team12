@@ -35,11 +35,13 @@ public class PhraseAnnotator extends JCasAnnotator_ImplBase{
 		for(int i=0;i<sentenceList.size();i++){
 			
 			Sentence sent=sentenceList.get(i);
+			/*
 			ArrayList<Token>tokenList= Utils.getTokenListFromSentenceList(sent);
 			ArrayList<NounPhrase>phraseList=extractNounPhrases(tokenList,aJCas);
 			FSList fsPhraseList=Utils.createNounPhraseList(aJCas, phraseList);
 			fsPhraseList.addToIndexes(aJCas);
 			sent.setPhraseList(fsPhraseList);
+			*/
 			sent.addToIndexes();
 			sentenceList.set(i, sent);
 		}
