@@ -17,6 +17,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.qalab.types.Answer;
 import edu.cmu.lti.qalab.types.Dependency;
+import edu.cmu.lti.qalab.types.NounPhrase;
 import edu.cmu.lti.qalab.types.Question;
 import edu.cmu.lti.qalab.types.QuestionAnswerSet;
 import edu.cmu.lti.qalab.types.Sentence;
@@ -30,6 +31,8 @@ import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphEdge;
@@ -113,6 +116,22 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 
 					FSList fsTokenList = this.createTokenList(jCas, tokenList);
 					fsTokenList.addToIndexes();
+					
+					// Add noun phrases to index
+	        Tree tree = ans.get(TreeAnnotation.class);
+	        
+	        ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
+	        for (Tree subtree : tree) { 
+	          if (subtree.label().value().equals("NP")) {
+	            String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+	            // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+	            NounPhrase nn=new NounPhrase(jCas);
+	            nn.setText(nounPhrase);
+	            phraseList.add(nn);
+	          }
+	        }
+	        FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
+	        fsPhraseList.addToIndexes(jCas);
 
 					answer.setId(String.valueOf(j));
 					answer.setBegin(tokenList.get(0).getBegin());// begin of
@@ -125,7 +144,7 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 										// token
 					answer.setText(ansText);
 					answer.setTokenList(fsTokenList);
-
+					answer.setNounPhraseList(fsPhraseList);
 					answer.addToIndexes();
 					choiceList.set(j, answer);
 
@@ -191,6 +210,22 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 
 				FSList fsTokenList = this.createTokenList(jCas, tokenList);
 				fsTokenList.addToIndexes();
+				
+				// Add noun phrases to index
+        Tree tree = question.get(TreeAnnotation.class);
+        
+        ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
+        for (Tree subtree : tree) { 
+          if (subtree.label().value().equals("NP")) {
+            String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+            // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+            NounPhrase nn=new NounPhrase(jCas);
+            nn.setText(nounPhrase);
+            phraseList.add(nn);
+          }
+        }
+        FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
+        fsPhraseList.addToIndexes(jCas);
 
 				// this is the Stanford dependency graph of the current sentence
 				SemanticGraph dependencies = question
@@ -214,6 +249,7 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 				annQuestion.setText(questionText);
 				annQuestion.setTokenList(fsTokenList);
 				annQuestion.setDependencies(fsDependencyList);
+				annQuestion.setNounList(fsPhraseList);
 				annQuestion.addToIndexes();
 				questionList.set(i, annQuestion);
 				sentNo++;

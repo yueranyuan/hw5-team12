@@ -17,6 +17,7 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.qalab.types.Dependency;
+import edu.cmu.lti.qalab.types.NounPhrase;
 import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
 import edu.cmu.lti.qalab.types.Token;
@@ -127,15 +128,23 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				// Dependency dependency = new Dependency(jCas);
 				// System.out.println("Dependencies: "+dependencies);
 				
+				
 				// experimental parser
+				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
 				
-				
+				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 				for (Tree subtree : tree) { 
 			    if (subtree.label().value().equals("NP")) {
-			      System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+			      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+			      // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+			      NounPhrase nn=new NounPhrase(jCas);
+			      nn.setText(nounPhrase);
+			      phraseList.add(nn);
 			    }
 				}
+				FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
+        fsPhraseList.addToIndexes(jCas);
 				
 				/*
 				Set<Tree> subtrees = tree.subTrees();
@@ -163,6 +172,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				annSentence.setText(sentText);
 				annSentence.setTokenList(fsTokenList);
 				annSentence.setDependencyList(fsDependencyList);
+				annSentence.setPhraseList(fsPhraseList);
 				annSentence.addToIndexes();
 				sentList.add(annSentence);
 				sentNo++;

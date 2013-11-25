@@ -63,6 +63,9 @@
       <import location="annotators/AnswerSelectionByKCandAggregation.xml"/>
     </delegateAnalysisEngine>
     
+  <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
+      <import name="annotators.AnswerSelectionByKCandVoting"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>CpeDescriptor</name>
@@ -91,7 +94,7 @@
         <node>AnswerChoiceCandAnsSimilarityScorer</node>
         <!--<node>AnswerChoiceCandAnsSynonymScorer</node>-->
         <!--<node>AnswerChoiceCandAnsPMIScorer</node>-->
-        <node>AnswerSelectionByKCandAggregation</node>       
+        <node>AnswerSelectionByKCandVoting</node>       
         <!--<node>AnswerSelectionByKCandVoting</node>-->
       </fixedFlow>
     </flowConstraints>
