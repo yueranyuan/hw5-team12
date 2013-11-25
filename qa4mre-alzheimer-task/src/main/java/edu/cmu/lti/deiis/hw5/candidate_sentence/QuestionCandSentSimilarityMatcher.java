@@ -15,6 +15,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.oaqa.core.provider.solr.SolrWrapper;
 import edu.cmu.lti.qalab.types.CandidateSentence;
+import edu.cmu.lti.qalab.types.Dependency;
 import edu.cmu.lti.qalab.types.NER;
 import edu.cmu.lti.qalab.types.NounPhrase;
 import edu.cmu.lti.qalab.types.Question;
@@ -125,6 +126,17 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 		for(int i=0;i<neList.size();i++){
 			solrQuery+="namedentities:\""+neList.get(i).getText()+"\" ";
 		}
+		
+		ArrayList<Dependency> dependencies = Utils.fromFSListToCollection(question.getDependencies(), Dependency.class);
+		
+		for(int j=0;j<dependencies.size();j++){
+		  String rel = dependencies.get(j).getRelation();
+	      String gov = dependencies.get(j).getGovernor().getText();
+	      String dep = dependencies.get(j).getDependent().getText();
+	      String depText = rel + "(" + gov + "," + dep + ")";
+	      solrQuery+="dependencies:\""+depText+"\" ";
+	    }
+		
 		solrQuery=solrQuery.trim();
 		
 		return solrQuery;
