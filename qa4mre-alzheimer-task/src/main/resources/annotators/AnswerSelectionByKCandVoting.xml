@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>true</primitive>
@@ -22,7 +23,7 @@
       <nameValuePair>
         <name>K_CANDIDATES</name>
         <value>
-          <integer>5</integer>
+          <integer>3</integer>
         </value>
       </nameValuePair>     
     </configurationParameterSettings>

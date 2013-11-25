@@ -82,7 +82,7 @@ public class TextSegmenter extends JCasAnnotator_ImplBase {
 				docText = segment1 + "\n" + segment2;
 				shift++;
 			}
-			//System.out.println(docText);
+			// System.out.println(docText);
 
 			testDoc.setText(docText);
 			testDoc.addToIndexes();

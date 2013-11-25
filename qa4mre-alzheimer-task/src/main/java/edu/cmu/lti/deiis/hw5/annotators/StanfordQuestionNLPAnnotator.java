@@ -99,6 +99,7 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 						String pos = token.get(PartOfSpeechAnnotation.class);
 						// this is the NER label of the token
 						String ne = token.get(NamedEntityTagAnnotation.class);
+						
 						Token annToken = new Token(jCas);
 						annToken.setBegin(begin);
 						annToken.setEnd(end);
