@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
@@ -56,12 +57,13 @@
       <import location="annotators/AnswerChoiceCandAnsSimilarityScorer.xml"/>
     </delegateAnalysisEngine>
     
-    <!-- <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
+    <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
       <import location="annotators/AnswerSelectionByKCandVoting.xml"/>
-    </delegateAnalysisEngine> -->
+    </delegateAnalysisEngine> 
+    <!--
     <delegateAnalysisEngine key="AnswerSelectionByKCandAggregation">
       <import location="annotators/AnswerSelectionByKCandAggregation.xml"/>
-    </delegateAnalysisEngine>
+    </delegateAnalysisEngine> -->
     
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -91,7 +93,7 @@
         <node>AnswerChoiceCandAnsSimilarityScorer</node>
         <!--<node>AnswerChoiceCandAnsSynonymScorer</node>-->
         <!--<node>AnswerChoiceCandAnsPMIScorer</node>-->
-        <node>AnswerSelectionByKCandAggregation</node>       
+        <node>AnswerSelectionByKCandVoting</node>       
         <!--<node>AnswerSelectionByKCandVoting</node>-->
       </fixedFlow>
     </flowConstraints>
