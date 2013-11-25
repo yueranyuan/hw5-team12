@@ -135,7 +135,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				
 				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 				for (Tree subtree : tree) { 
-			    if (subtree.label().value().equals("NP")) {
+			    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
 			      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
 			      // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
 			      NounPhrase nn=new NounPhrase(jCas);
