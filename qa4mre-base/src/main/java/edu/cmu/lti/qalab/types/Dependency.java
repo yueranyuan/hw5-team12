@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Mon May 13 14:41:33 EDT 2013
- * XML source: /media/alkesh/Windows7_OS/Users/alkesh/git/qa4mre-cse/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
+ * Updated by JCasGen Mon Nov 25 12:13:03 EST 2013
+ * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class Dependency extends Annotation {
   /** @generated

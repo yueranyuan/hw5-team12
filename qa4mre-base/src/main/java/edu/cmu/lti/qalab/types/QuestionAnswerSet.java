@@ -12,8 +12,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Mon May 13 14:41:33 EDT 2013
- * XML source: /media/alkesh/Windows7_OS/Users/alkesh/git/qa4mre-cse/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
+ * Updated by JCasGen Mon Nov 25 12:13:03 EST 2013
+ * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class QuestionAnswerSet extends Annotation {
   /** @generated
@@ -115,6 +115,24 @@ public class QuestionAnswerSet extends Annotation {
     if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_candidateSentenceList == null)
       jcasType.jcas.throwFeatMissing("candidateSentenceList", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
     jcasType.ll_cas.ll_setRefValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_candidateSentenceList, jcasType.ll_cas.ll_getFSRef(v));}    
+   
+    
+  //*--------------*
+  //* Feature: preAnswer
+
+  /** getter for preAnswer - gets 
+   * @generated */
+  public String getPreAnswer() {
+    if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_preAnswer == null)
+      jcasType.jcas.throwFeatMissing("preAnswer", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    return jcasType.ll_cas.ll_getStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer);}
+    
+  /** setter for preAnswer - sets  
+   * @generated */
+  public void setPreAnswer(String v) {
+    if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_preAnswer == null)
+      jcasType.jcas.throwFeatMissing("preAnswer", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    jcasType.ll_cas.ll_setStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer, v);}    
   }
 
     
