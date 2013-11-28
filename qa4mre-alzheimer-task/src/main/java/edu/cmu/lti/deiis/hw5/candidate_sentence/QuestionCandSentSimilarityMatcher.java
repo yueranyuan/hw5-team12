@@ -106,6 +106,7 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 					System.out.println(relScore + "\t" + sentence);
 				}
 
+				/*
 				// pre-select top answer
 				searchQuery = this.formSolrQuery(question, answers.get(0));
 				solrQuery = new SolrQuery();
@@ -152,6 +153,8 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 				if (count == 1)
 					qaSet.get(i).setPreAnswer(preChoice);
 
+				*/ 
+				
 				FSList fsCandidateSentList = Utils.fromCollectionToFSList(
 						aJCas, candidateSentList);
 				fsCandidateSentList.addToIndexes();

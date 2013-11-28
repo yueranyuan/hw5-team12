@@ -56,6 +56,11 @@
       <artifactId>disco</artifactId>
       <version>1.4</version>
     </dependency>
+    <dependency>
+    	<groupId>org.cleartk</groupId>
+    	<artifactId>cleartk-util</artifactId>
+    	<version>0.9.2</version>
+    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:git@github.com:kar2905/qalabcmu.git</connection>

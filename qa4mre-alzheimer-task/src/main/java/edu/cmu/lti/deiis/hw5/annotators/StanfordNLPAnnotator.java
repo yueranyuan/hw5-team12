@@ -62,7 +62,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 		// System.out.println("===============================================");
 		// System.out.println("DocText: " + docText);
 		String filteredSents[] = filteredText.split("[\\n]");
-		System.out.println("Total sentences: "+filteredSents.length);
+		System.out.println("Total sentences: " + filteredSents.length);
 		ArrayList<Sentence> sentList = new ArrayList<Sentence>();
 		int sentNo = 0;
 		for (int i = 0; i < filteredSents.length; i++) {
@@ -80,7 +80,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 			List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 			// SourceDocument sourcecDocument=(SourceDocument)
 			// jCas.getAnnotationIndex(SourceDocument.type);
-			
+
 			// FSList sentenceList = srcDoc.getSentenceList();
 
 			for (CoreMap sentence : sentences) {
@@ -112,6 +112,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					annToken.setNer(ne);
 					annToken.addToIndexes();
 
+					System.out.println(orgText+"-"+pos);
 					tokenList.add(annToken);
 				}
 
@@ -127,38 +128,34 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				fsDependencyList.addToIndexes();
 				// Dependency dependency = new Dependency(jCas);
 				// System.out.println("Dependencies: "+dependencies);
-				
-				
+
 				// experimental parser
 				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
-				
-				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
-				for (Tree subtree : tree) { 
-			    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
-			      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-			      // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
-			      NounPhrase nn=new NounPhrase(jCas);
-			      nn.setText(nounPhrase);
-			      phraseList.add(nn);
-			    }
+
+				ArrayList<NounPhrase> phraseList = new ArrayList<NounPhrase>();
+				for (Tree subtree : tree) {
+					if (subtree.label().value().equals("NP")
+							|| subtree.label().value().equals("VP")) {
+						String nounPhrase = edu.stanford.nlp.ling.Sentence
+								.listToString(subtree.yield());
+						// System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+						NounPhrase nn = new NounPhrase(jCas);
+						nn.setText(nounPhrase);
+						phraseList.add(nn);
+					}
 				}
-				FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
-        fsPhraseList.addToIndexes(jCas);
-				
+				FSList fsPhraseList = Utils.createNounPhraseList(jCas,
+						phraseList);
+				fsPhraseList.addToIndexes(jCas);
+
 				/*
-				Set<Tree> subtrees = tree.subTrees();
-        Iterator<Tree> tIter = subtrees.iterator();
-				while (tIter.hasNext()) {
-				  Tree t = tIter.next();
-				  Collection<Label> labels = t.labels();
-				  Iterator<Label> lIter = labels.iterator();
-				  while (lIter.hasNext()) {
-				    Label l = lIter.next();
-				    l.value();
-				  }
-				}
-				*/
+				 * Set<Tree> subtrees = tree.subTrees(); Iterator<Tree> tIter =
+				 * subtrees.iterator(); while (tIter.hasNext()) { Tree t =
+				 * tIter.next(); Collection<Label> labels = t.labels();
+				 * Iterator<Label> lIter = labels.iterator(); while
+				 * (lIter.hasNext()) { Label l = lIter.next(); l.value(); } }
+				 */
 
 				annSentence.setId(String.valueOf(sentNo));
 				annSentence.setBegin(tokenList.get(0).getBegin());// begin of
