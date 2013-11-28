@@ -131,6 +131,10 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 					solrQuery.setFields("*", "score");
 					results = solrWrapper.runQuery(solrQuery,
 							TOP_SEARCH_RESULTS);
+					if (results == null){
+						count = 0;break;
+					}
+						
 					doc = results.get(0);
 					double tempScore = Double.parseDouble(doc.get("score")
 							.toString());
