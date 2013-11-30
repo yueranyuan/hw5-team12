@@ -22,6 +22,7 @@ import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
 import edu.cmu.lti.qalab.types.Token;
 import edu.cmu.lti.qalab.utils.Utils;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -83,6 +84,9 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 
 			// FSList sentenceList = srcDoc.getSentenceList();
 
+			// Moved to the front - to add single verbs
+			ArrayList<NounPhrase> phraseList = new ArrayList<NounPhrase>();
+			
 			for (CoreMap sentence : sentences) {
 
 				String sentText = sentence.toString();
@@ -90,11 +94,12 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				ArrayList<Token> tokenList = new ArrayList<Token>();
 
 				// Dependency should have Token rather than String
-				for (CoreLabel token : sentence.get(TokensAnnotation.class)) { // order
+				for (int j = 0; j < sentence.get(TokensAnnotation.class).size(); j++) { // order
 																				// needs
 																				// to
 																				// be
 																				// considered
+					CoreLabel token = sentence.get(TokensAnnotation.class).get(j);
 					int begin = token.beginPosition();
 
 					int end = token.endPosition();
@@ -104,6 +109,8 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					String pos = token.get(PartOfSpeechAnnotation.class);
 					// this is the NER label of the token
 					String ne = token.get(NamedEntityTagAnnotation.class);
+					// this is lemma of the token
+					String lemma = token.getString(LemmaAnnotation.class);
 					Token annToken = new Token(jCas);
 					annToken.setBegin(begin);
 					annToken.setEnd(end);
@@ -112,7 +119,18 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					annToken.setNer(ne);
 					annToken.addToIndexes();
 
-					System.out.println(orgText+"-"+pos);
+					// add verbs
+					if (pos.startsWith("VB")){
+						// ignore 'was' before the passive verb
+						if (j!= sentence.get(TokensAnnotation.class).size()-1)
+							if (sentence.get(TokensAnnotation.class).get(j+1).get(PartOfSpeechAnnotation.class).startsWith("VBN"))
+								continue;
+						NounPhrase nn = new NounPhrase(jCas);
+						nn.setText(lemma);
+						phraseList.add(nn);
+					}
+					
+					System.out.println(orgText+"-"+pos+"-"+lemma);
 					tokenList.add(annToken);
 				}
 
@@ -133,7 +151,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
 
-				ArrayList<NounPhrase> phraseList = new ArrayList<NounPhrase>();
+				
 				for (Tree subtree : tree) {
 					if (subtree.label().value().equals("NP")
 							|| subtree.label().value().equals("VP")) {
