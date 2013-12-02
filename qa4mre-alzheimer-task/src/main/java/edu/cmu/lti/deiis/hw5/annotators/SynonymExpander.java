@@ -32,10 +32,10 @@ public class SynonymExpander {
 				String[] wordForms = synsets[i].getWordForms();
 				for (int j = 0; j < wordForms.length; j++)
 				{
-					syn+=((j > 0 ? "-" : "") +
-							wordForms[j]);
+					if (!(wordForms[j].equals(str)))
+						result.add(wordForms[j]);
 				}
-				result.add(syn);
+				
 				//System.out.println(": " + synsets[i].getDefinition());
 			}
 			return result;

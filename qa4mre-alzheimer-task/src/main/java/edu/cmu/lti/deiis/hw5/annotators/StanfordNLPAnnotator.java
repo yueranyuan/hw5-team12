@@ -17,6 +17,7 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.qalab.types.Dependency;
+import edu.cmu.lti.deiis.hw5.annotators.SynonymExpander;
 import edu.cmu.lti.qalab.types.NounPhrase;
 import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
@@ -128,6 +129,12 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 						NounPhrase nn = new NounPhrase(jCas);
 						nn.setText(lemma);
 						phraseList.add(nn);
+						ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
+						for (String str : syn){
+							NounPhrase sn = new NounPhrase(jCas);
+							sn.setText(str);
+							phraseList.add(sn);
+						}
 					}
 					
 					System.out.println(orgText+"-"+pos+"-"+lemma);
