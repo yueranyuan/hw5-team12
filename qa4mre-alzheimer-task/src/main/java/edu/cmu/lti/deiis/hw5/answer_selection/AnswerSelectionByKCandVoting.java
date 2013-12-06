@@ -8,6 +8,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.qalab.types.Answer;
@@ -43,12 +44,13 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 
 		for (int i = 0; i < qaSet.size(); i++) {
 
-			Question question = qaSet.get(i).getQuestion();
+		  QuestionAnswerSet qa = qaSet.get(i);
+			Question question = qa.getQuestion();
 			System.out.println("Question: " + question.getText());
 			ArrayList<Answer> choiceList = Utils.fromFSListToCollection(qaSet
 					.get(i).getAnswerList(), Answer.class);
 			ArrayList<CandidateSentence> candSentList = Utils
-					.fromFSListToCollection(qaSet.get(i)
+					.fromFSListToCollection(qa
 							.getCandidateSentenceList(),
 							CandidateSentence.class);
 			
@@ -67,7 +69,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			// pre-select choice
 			String preChoice = "";
 			try{
-				preChoice = qaSet.get(i).getPreAnswer();
+				preChoice = qa.getPreAnswer();
 				// if pre-selected, then skip the next candSent part
 				if (preChoice != null){
 					total++;
@@ -133,6 +135,21 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			
+			// select the best answer
+			for (int j = 0; j < choiceList.size(); j++) {
+        Answer answer = choiceList.get(j);
+        if (answer.getText().equals(bestChoice)) {
+          answer.setIsSelected(true);
+          choiceList.set(j, answer);
+          break;
+        }
+      }
+			
+			FSList fsAnswerList = Utils.fromCollectionToFSList(aJCas, choiceList);
+			fsAnswerList.addToIndexes();
+			qa.setAnswerList(fsAnswerList);
+			
 			System.out.println("Correct Choice: " + "\t" + correct);
 			System.out.println("Best Choice: " + "\t" + bestChoice);
 
@@ -171,9 +188,12 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			String key = it.next();
 			Double val = hshAnswer.get(key);
 			System.out.println(key + "\t" + key + "\t" + val);
-			if (val > maxScore) {
+			if (val > maxScore && !key.equals("discard")) {
 				maxScore = val;
 				bestAns = key;
+			}
+			if (key.equals("discard")) {
+			  System.out.println("HERE HERE HERE");
 			}
 		}
 		return bestAns;

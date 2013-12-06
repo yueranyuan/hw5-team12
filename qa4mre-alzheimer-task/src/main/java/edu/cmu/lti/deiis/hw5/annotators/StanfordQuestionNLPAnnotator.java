@@ -24,6 +24,7 @@ import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
 import edu.cmu.lti.qalab.types.Token;
 import edu.cmu.lti.qalab.utils.Utils;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -86,9 +87,10 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 					String ansText = ans.toString();
 					//Answer annAnswer = new Answer(jCas);
 					ArrayList<Token> tokenList = new ArrayList<Token>();
+					List<CoreLabel> nlpTokens = ans.get(TokensAnnotation.class);
 
 					// Dependency should have Token rather than String
-					for (CoreLabel token : ans.get(TokensAnnotation.class)) { // order
+					for (CoreLabel token : nlpTokens) { // order
 																				// needs
 																				// to
 																				// be
@@ -123,8 +125,25 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 	        ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 	        for (Tree subtree : tree) { 
 	          if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+	            String nounPhrase = "";
+	            // Find the matching token and get the lemma.  Code based on
+	            // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+	            for(Tree leaf : subtree.getLeaves()) {
+	              if(leaf.label() instanceof CoreLabel) {
+	                CoreLabel label = (CoreLabel) leaf.label();
+	                for(CoreLabel l : nlpTokens) {
+	                  if(l.beginPosition() == label.beginPosition() &&
+	                       l.endPosition() == label.endPosition()) {
+	                    nounPhrase += " " + l.get(LemmaAnnotation.class);
+	                    break;
+	                  }
+	                }
+	              }
+	            }
+	            
+	            /*
 	            String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-	            // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+	            */
 	            NounPhrase nn=new NounPhrase(jCas);
 	            nn.setText(nounPhrase);
 	            phraseList.add(nn);
@@ -181,9 +200,10 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 				String qText = question.toString();
 				Question annQuestion = new Question(jCas);
 				ArrayList<Token> tokenList = new ArrayList<Token>();
+				List<CoreLabel> nlpTokens = question.get(TokensAnnotation.class);
 
 				// Dependency should have Token rather than String
-				for (CoreLabel token : question.get(TokensAnnotation.class)) { // order
+				for (CoreLabel token : nlpTokens) { // order
 																				// needs
 																				// to
 																				// be
@@ -217,8 +237,26 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
         ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
         for (Tree subtree : tree) { 
           if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+            String nounPhrase = "";
+            // Find the matching token and get the lemma.  Code based on
+            // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+            for(Tree leaf : subtree.getLeaves()) {
+              if(leaf.label() instanceof CoreLabel) {
+                CoreLabel label = (CoreLabel) leaf.label();
+                for(CoreLabel l : nlpTokens) {
+                  if(l.beginPosition() == label.beginPosition() &&
+                       l.endPosition() == label.endPosition()) {
+                    nounPhrase += " " + l.get(LemmaAnnotation.class);
+                    break;
+                  }
+                }
+              }
+            }
+            
+            
+            /*
             String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-            // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+            */
             NounPhrase nn=new NounPhrase(jCas);
             nn.setText(nounPhrase);
             phraseList.add(nn);

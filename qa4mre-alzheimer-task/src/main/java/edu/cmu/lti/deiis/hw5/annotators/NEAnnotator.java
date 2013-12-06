@@ -15,7 +15,7 @@ import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.utils.Utils;
 
 public class NEAnnotator extends JCasAnnotator_ImplBase{
-
+  
 	Tagger abnerTagger = null;
 	@Override
 	public void initialize(UimaContext context)
