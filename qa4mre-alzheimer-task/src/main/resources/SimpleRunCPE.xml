@@ -68,7 +68,7 @@
       <import name="annotators.AnswerChoiceCandAnsPMIScorer"/>
     </delegateAnalysisEngine>
   <delegateAnalysisEngine key="ClearNLPAnnotator">
-      <import location="/home/yueran/git/hw5-team12/qa4mre-alzheimer-task/src/main/resources/annotators/ClearNLPAnnotator.xml"/>
+      <import location="annotators/ClearNLPAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
