@@ -1,6 +1,6 @@
 
 
-/* First created by JCasGen Sun Feb 03 13:01:15 EST 2013 */
+/* First created by JCasGen Thu Dec 05 21:26:52 EST 2013 */
 package edu.cmu.lti.qalab.types;
 
 import org.apache.uima.jcas.JCas; 
@@ -12,7 +12,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Mon Nov 25 12:13:03 EST 2013
+ * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
  * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class Sentence extends Annotation {
