@@ -82,23 +82,19 @@
       <fixedFlow>
         <node>TextSegmenter</node>
         <node>StanfordSentenceAnnotator</node>
-        <node>NoiseFilter</node>
         <node>StanfordNLPAnnotator</node>
         <node>StanfordQuestionNLPAnnotator</node>
-        <node>ClearNLPAnnotator</node>
         <node>PhraseAnnotator</node>
         <node>QuestionPhraseAnnotator</node>
         <node>NEAnnotator</node>
-        <!-- <node>SynonymAnnotator</node>-->
-        <!-- <node>QASynonymAnnotator</node>-->
         <node>QuestionNEAnnotator</node>
         <node>SolrIndexer</node>
+        <!-- <node>SynonymAnnotator</node>-->
+        <!-- <node>QASynonymAnnotator</node>-->
+        <node>QuestionCandSentSimilarityMatcher</node>
+        <node>AnswerChoiceCandAnsPMIScorer</node>
         <!-- <node>QuestionCandSentSynonymMatcher</node> -->        
         <!-- <node>QuestionCandSentDependencyMatcher</node>-->
-        <node>QuestionCandSentSimilarityMatcher</node>
-        <!--<node>AnswerChoiceCandAnsSynonymScorer</node>-->
-        <!--<node>AnswerChoiceCandAnsPMIScorer</node>-->
-        <node>AnswerChoiceCandAnsPMIScorer</node>       
         <node>AnswerSelectionByKCandVoting</node>
         <!--<node>AnswerSelectionByKCandVoting</node>-->
       </fixedFlow>

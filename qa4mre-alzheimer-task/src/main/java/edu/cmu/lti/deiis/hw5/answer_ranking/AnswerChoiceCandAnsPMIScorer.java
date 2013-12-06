@@ -1,8 +1,13 @@
 package edu.cmu.lti.deiis.hw5.answer_ranking;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.MapSolrParams;
@@ -31,6 +36,9 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 	HashSet<String> hshStopWords = new HashSet<String>();
 	int K_CANDIDATES=5;
 	
+	private HashMap<String, String> ontoMapNumToName;
+	private HashMap<String, String> ontoMapNameToNum;
+	
 	@Override
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
@@ -45,7 +53,66 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		loadOntology();
+	}
+	
+	public InputStream getStream(String file) {
+    InputStream is = this.getClass().getClassLoader().getResourceAsStream(file);
+    return is;
+  }
+	
+	public String[] FindParents(String name) {
+	  name = name.toLowerCase();
+	  if (!ontoMapNameToNum.containsKey(name)) {
+	    return null;
+	  }
+	  String num = ontoMapNameToNum.get(name);
+	  String[] toks = num.split(Pattern.quote("."));
+	  
+	  String[] parents = new String[toks.length - 1];
+	  for (int i = 0; i < toks.length - 1; i++) {
+	    String parentNum = "";
+	    for (int j = 0; j < i; j++) {
+	      parentNum += toks[j] + ".";
+	    }
+	    parentNum += toks[i];
+	    parents[i] = ontoMapNumToName.get(parentNum);
+	  }
+	  return parents;
+	}
+	
+	protected void loadOntology() {
+	  System.out.println("loading ontology...");
+    ontoMapNumToName = new HashMap<String, String>();
+    ontoMapNameToNum = new HashMap<String, String>();
+    InputStream is = getStream("ontology/parsed_onto.xml");
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    String line;
+    try {
+      while ((line = reader.readLine()) != null) { 
+        String[] toks = line.split(":");
+        if (toks.length == 2) {
+          String num = toks[0].toLowerCase();
+          String name = toks[1].toLowerCase();
+          if (!ontoMapNumToName.containsKey(num)) {
+            ontoMapNumToName.put(num, name);
+          }
+          ontoMapNameToNum.put(name, num);
+        }
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      is.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    System.out.println(ontoMapNameToNum.size() + " entries loaded");
+    
+    String[] parents = FindParents("golgi complex");
 	}
 
 	@Override
