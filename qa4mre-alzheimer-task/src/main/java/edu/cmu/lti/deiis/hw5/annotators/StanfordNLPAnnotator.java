@@ -18,6 +18,7 @@ import org.apache.uima.jcas.cas.NonEmptyFSList;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.qalab.types.Dependency;
+import edu.cmu.lti.deiis.hw5.annotators.SynonymExpander;
 import edu.cmu.lti.qalab.types.NounPhrase;
 import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
@@ -67,7 +68,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 		// System.out.println("===============================================");
 		// System.out.println("DocText: " + docText);
 		String filteredSents[] = filteredText.split("[\\n]");
-		System.out.println("Total sentences: "+filteredSents.length);
+		System.out.println("Total sentences: " + filteredSents.length);
 		ArrayList<Sentence> sentList = new ArrayList<Sentence>();
 		int sentNo = 0;
 		for (int i = 0; i < filteredSents.length; i++) {
@@ -85,9 +86,12 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 			List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 			// SourceDocument sourcecDocument=(SourceDocument)
 			// jCas.getAnnotationIndex(SourceDocument.type);
-			
+
 			// FSList sentenceList = srcDoc.getSentenceList();
 
+			// Moved to the front - to add single verbs
+			ArrayList<NounPhrase> phraseList = new ArrayList<NounPhrase>();
+			
 			for (CoreMap sentence : sentences) {
 
 				String sentText = sentence.toString();
@@ -96,11 +100,12 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				List<CoreLabel> nlpTokens = sentence.get(TokensAnnotation.class);
 
 				// Dependency should have Token rather than String
-				for (CoreLabel token : nlpTokens) { // order
+				for (int j = 0; j < sentence.get(TokensAnnotation.class).size(); j++) { // order
 																				// needs
 																				// to
 																				// be
 																				// considered
+					CoreLabel token = sentence.get(TokensAnnotation.class).get(j);
 					int begin = token.beginPosition();
 
 					int end = token.endPosition();
@@ -110,6 +115,8 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					String pos = token.get(PartOfSpeechAnnotation.class);
 					// this is the NER label of the token
 					String ne = token.get(NamedEntityTagAnnotation.class);
+					// this is lemma of the token
+					String lemma = token.getString(LemmaAnnotation.class);
 					Token annToken = new Token(jCas);
 					annToken.setBegin(begin);
 					annToken.setEnd(end);
@@ -118,6 +125,24 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					annToken.setNer(ne);
 					annToken.addToIndexes();
 
+					// add verbs
+					if (pos.startsWith("VB")){
+						// ignore 'was' before the passive verb
+						if (j!= sentence.get(TokensAnnotation.class).size()-1)
+							if (sentence.get(TokensAnnotation.class).get(j+1).get(PartOfSpeechAnnotation.class).startsWith("VBN"))
+								continue;
+						NounPhrase nn = new NounPhrase(jCas);
+						nn.setText(lemma);
+						phraseList.add(nn);
+						ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
+						for (String str : syn){
+							NounPhrase sn = new NounPhrase(jCas);
+							sn.setText(str);
+							phraseList.add(sn);
+						}
+					}
+					
+					System.out.println(orgText+"-"+pos+"-"+lemma);
 					tokenList.add(annToken);
 				}
 
@@ -133,57 +158,51 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				fsDependencyList.addToIndexes();
 				// Dependency dependency = new Dependency(jCas);
 				// System.out.println("Dependencies: "+dependencies);
-				
-				
+
 				// experimental parser
 				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
-				
+
 				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 				for (Tree subtree : tree) { 
-			    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
-			      
-			      String nounPhrase = "";
-			      // Find the matching token and get the lemma.  Code based on
-			      // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
-			      for(Tree leaf : subtree.getLeaves()) {
-			        if(leaf.label() instanceof CoreLabel) {
-			          CoreLabel label = (CoreLabel) leaf.label();
-			          for(CoreLabel l : nlpTokens) {
-			            if(l.beginPosition() == label.beginPosition() &&
-			                 l.endPosition() == label.endPosition()) {
-			              nounPhrase += " " + l.get(LemmaAnnotation.class);
-			              break;
-			            }
-			          }
-			        }
-			      }
-			      
-			      //System.out.println(nounPhrase);
-			      /*
-			      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-			      */
-			      NounPhrase nn=new NounPhrase(jCas);
-			      nn.setText(nounPhrase);
-			      phraseList.add(nn);
-			    }
+                    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+                      
+                      String nounPhrase = "";
+                      // Find the matching token and get the lemma.  Code based on
+                      // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+                      for(Tree leaf : subtree.getLeaves()) {
+                        if(leaf.label() instanceof CoreLabel) {
+                          CoreLabel label = (CoreLabel) leaf.label();
+                          for(CoreLabel l : nlpTokens) {
+                            if(l.beginPosition() == label.beginPosition() &&
+                                 l.endPosition() == label.endPosition()) {
+                              nounPhrase += " " + l.get(LemmaAnnotation.class);
+                              break;
+                            }
+                          }
+                        }
+                      }
+                      
+                      //System.out.println(nounPhrase);
+                      /*
+                      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+                      */
+                      NounPhrase nn=new NounPhrase(jCas);
+                      nn.setText(nounPhrase);
+                      phraseList.add(nn);
+                    }
 				}
-				FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
-        fsPhraseList.addToIndexes(jCas);
-				
+				FSList fsPhraseList = Utils.createNounPhraseList(jCas,
+						phraseList);
+				fsPhraseList.addToIndexes(jCas);
+
 				/*
-				Set<Tree> subtrees = tree.subTrees();
-        Iterator<Tree> tIter = subtrees.iterator();
-				while (tIter.hasNext()) {
-				  Tree t = tIter.next();
-				  Collection<Label> labels = t.labels();
-				  Iterator<Label> lIter = labels.iterator();
-				  while (lIter.hasNext()) {
-				    Label l = lIter.next();
-				    l.value();
-				  }
-				}
-				*/
+				 * Set<Tree> subtrees = tree.subTrees(); Iterator<Tree> tIter =
+				 * subtrees.iterator(); while (tIter.hasNext()) { Tree t =
+				 * tIter.next(); Collection<Label> labels = t.labels();
+				 * Iterator<Label> lIter = labels.iterator(); while
+				 * (lIter.hasNext()) { Label l = lIter.next(); l.value(); } }
+				 */
 
 				annSentence.setId(String.valueOf(sentNo));
 				annSentence.setBegin(tokenList.get(0).getBegin());// begin of

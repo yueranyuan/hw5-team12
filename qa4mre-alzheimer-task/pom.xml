@@ -56,9 +56,6 @@
       <artifactId>disco</artifactId>
       <version>1.4</version>
     </dependency>
-
-
-
     <dependency>
     	<groupId>org.cleartk</groupId>
     	<artifactId>cleartk-clearnlp</artifactId>

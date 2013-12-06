@@ -39,7 +39,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 		int total = 0;
 		int unanswered = 0;
 		
-
+		
 
 		for (int i = 0; i < qaSet.size(); i++) {
 
@@ -51,7 +51,8 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 					.fromFSListToCollection(qaSet.get(i)
 							.getCandidateSentenceList(),
 							CandidateSentence.class);
-
+			
+			
 			int topK = Math.min(K_CANDIDATES, candSentList.size());
 			String correct = "";
 
@@ -63,6 +64,27 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 				}
 			}
 
+			// pre-select choice
+			String preChoice = "";
+			try{
+				preChoice = qaSet.get(i).getPreAnswer();
+				// if pre-selected, then skip the next candSent part
+				if (preChoice != null){
+					total++;
+					System.out.println("Correct Choice: " + "\t" + correct);
+					System.out.println("Pre-select Choice: " + "\t" + preChoice);
+					if (correct.equals(preChoice))
+						matched++;
+					System.out
+					.println("================================================");
+					continue; 
+				}
+				
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+			
 			HashMap<String, Double> hshAnswer = new HashMap<String, Double>();
 
 
