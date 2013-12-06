@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <analysisEngineDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
@@ -58,15 +57,18 @@
     </delegateAnalysisEngine>
     
     <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
-      <import location="annotators/AnswerSelectionByKCandVoting.xml"/>
+      <import name="annotators.AnswerSelectionByKCandVoting"/>
     </delegateAnalysisEngine> 
     <!--
     <delegateAnalysisEngine key="AnswerSelectionByKCandAggregation">
       <import location="annotators/AnswerSelectionByKCandAggregation.xml"/>
     </delegateAnalysisEngine> -->
     
-  <delegateAnalysisEngine key="AnswerSelectionByKCandVoting">
-      <import name="annotators.AnswerSelectionByKCandVoting"/>
+  <delegateAnalysisEngine key="AnswerChoiceCandAnsPMIScorer">
+      <import name="annotators.AnswerChoiceCandAnsPMIScorer"/>
+    </delegateAnalysisEngine>
+  <delegateAnalysisEngine key="ClearNLPAnnotator">
+      <import location="/home/yueran/git/hw5-team12/qa4mre-alzheimer-task/src/main/resources/annotators/ClearNLPAnnotator.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
@@ -83,20 +85,21 @@
         <node>NoiseFilter</node>
         <node>StanfordNLPAnnotator</node>
         <node>StanfordQuestionNLPAnnotator</node>
+        <node>ClearNLPAnnotator</node>
         <node>PhraseAnnotator</node>
         <node>QuestionPhraseAnnotator</node>
         <node>NEAnnotator</node>
-        <node>QuestionNEAnnotator</node>
         <!-- <node>SynonymAnnotator</node>-->
         <!-- <node>QASynonymAnnotator</node>-->
+        <node>QuestionNEAnnotator</node>
         <node>SolrIndexer</node>
-        <node>QuestionCandSentSimilarityMatcher</node>
         <!-- <node>QuestionCandSentSynonymMatcher</node> -->        
         <!-- <node>QuestionCandSentDependencyMatcher</node>-->
-        <node>AnswerChoiceCandAnsSimilarityScorer</node>
+        <node>QuestionCandSentSimilarityMatcher</node>
         <!--<node>AnswerChoiceCandAnsSynonymScorer</node>-->
         <!--<node>AnswerChoiceCandAnsPMIScorer</node>-->
-        <node>AnswerSelectionByKCandVoting</node>       
+        <node>AnswerChoiceCandAnsPMIScorer</node>       
+        <node>AnswerSelectionByKCandVoting</node>
         <!--<node>AnswerSelectionByKCandVoting</node>-->
       </fixedFlow>
     </flowConstraints>

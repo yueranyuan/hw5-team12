@@ -149,9 +149,12 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			String key = it.next();
 			Double val = hshAnswer.get(key);
 			System.out.println(key + "\t" + key + "\t" + val);
-			if (val > maxScore) {
+			if (val > maxScore && !key.equals("discard")) {
 				maxScore = val;
 				bestAns = key;
+			}
+			if (key.equals("discard")) {
+			  System.out.println("HERE HERE HERE");
 			}
 		}
 		return bestAns;

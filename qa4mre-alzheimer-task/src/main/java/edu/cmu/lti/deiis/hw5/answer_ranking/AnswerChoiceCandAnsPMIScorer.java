@@ -103,6 +103,10 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 						}
 
 					}
+					
+					if (answer.getText().equals("discard")) {
+					  score1 = -1.0;
+					}
 
 					System.out.println(choiceList.get(j).getText() + "\t"
 							+ score1 + "\t" + ((score1)));

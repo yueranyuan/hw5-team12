@@ -14,6 +14,7 @@ import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import edu.cmu.lti.oaqa.core.provider.solr.SolrWrapper;
+import edu.cmu.lti.qalab.types.Answer;
 import edu.cmu.lti.qalab.types.CandidateSentence;
 import edu.cmu.lti.qalab.types.Dependency;
 import edu.cmu.lti.qalab.types.NER;
@@ -63,7 +64,12 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 			Question question=qaSet.get(i).getQuestion();
 			System.out.println("========================================================");
 			System.out.println("Question: "+question.getText());
-			String searchQuery=this.formSolrQuery(question);
+			
+			// add answers to query
+			ArrayList<Answer> choiceList = Utils.fromFSListToCollection(qaSet
+		          .get(i).getAnswerList(), Answer.class);
+			
+			String searchQuery=this.formSolrQuery(question, choiceList);
 			if(searchQuery.trim().equals("")){
 				continue;
 			}
@@ -113,7 +119,7 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 		
 	}
 
-	public String formSolrQuery(Question question){
+	public String formSolrQuery(Question question, ArrayList<Answer> choiceList){
 		String solrQuery="";
 		
 		ArrayList<NounPhrase>nounPhrases=Utils.fromFSListToCollection(question.getNounList(), NounPhrase.class);
@@ -125,18 +131,38 @@ public class QuestionCandSentSimilarityMatcher  extends JCasAnnotator_ImplBase{
 		ArrayList<NER>neList=Utils.fromFSListToCollection(question.getNerList(), NER.class);
 		for(int i=0;i<neList.size();i++){
 			solrQuery+="namedentities:\""+neList.get(i).getText()+"\" ";
+			//System.out.println(neList.get(i).getText() + "##############");
 		}
 		
 		ArrayList<Dependency> dependencies = Utils.fromFSListToCollection(question.getDependencies(), Dependency.class);
 		
 		for(int j=0;j<dependencies.size();j++){
 		  String rel = dependencies.get(j).getRelation();
-	      String gov = dependencies.get(j).getGovernor().getText();
-	      String dep = dependencies.get(j).getDependent().getText();
-	      String depText = rel + "(" + gov + "," + dep + ")";
-	      solrQuery+="dependencies:\""+depText+"\" ";
-	    }
+      String gov = dependencies.get(j).getGovernor().getText();
+      String dep = dependencies.get(j).getDependent().getText();
+      String depText = rel + "(" + gov + "," + dep + ")";
+      solrQuery+="dependencies:\""+depText+"\" ";
+    }
 		
+		/*
+		// add choice to query
+		for (int j = 0; j < choiceList.size(); j++) {
+
+      Answer answer = choiceList.get(j);
+      ArrayList<NounPhrase> choiceNounPhraseList = Utils
+          .fromFSListToCollection(answer.getNounPhraseList(),
+              NounPhrase.class);
+      for(int i=0;i<choiceNounPhraseList.size();i++){
+        solrQuery+="nounphrases:\""+choiceNounPhraseList.get(i).getText()+"\" ";     
+      }
+      
+      ArrayList<NER> choiceNEList = Utils.fromFSListToCollection(
+          answer.getNerList(), NER.class);
+      for(int i=0;i<choiceNEList.size();i++){
+        solrQuery+="namedentities:\""+choiceNEList.get(i).getText()+"\" ";
+      }
+		}
+		*/
 		solrQuery=solrQuery.trim();
 		
 		return solrQuery;

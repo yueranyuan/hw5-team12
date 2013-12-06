@@ -119,6 +119,7 @@ public class SolrIndexer extends JCasAnnotator_ImplBase {
 				    String dep = dependencies.get(j).getDependent().getText();
 				    String depText = rel + "(" + gov + "," + dep + ")";
 				    depList.add(depText);
+				    System.out.println("FINAL " + depText);
 				  }
 				  
 				  indexMap.put("dependencies", depList);

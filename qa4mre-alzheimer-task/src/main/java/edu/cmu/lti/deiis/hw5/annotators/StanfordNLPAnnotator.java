@@ -1,5 +1,6 @@
 package edu.cmu.lti.deiis.hw5.annotators;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
 import edu.cmu.lti.qalab.types.Token;
 import edu.cmu.lti.qalab.utils.Utils;
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -36,6 +38,7 @@ import edu.stanford.nlp.trees.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
 import edu.stanford.nlp.trees.semgraph.SemanticGraphEdge;
 import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.util.IntPair;
 
 public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 
@@ -49,6 +52,8 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");// ,
 																			// ssplit
 		stanfordAnnotator = new StanfordCoreNLP(props);
+		
+		String test = "this is a test sentence";
 	}
 
 	@Override
@@ -88,9 +93,10 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				String sentText = sentence.toString();
 				Sentence annSentence = new Sentence(jCas);
 				ArrayList<Token> tokenList = new ArrayList<Token>();
+				List<CoreLabel> nlpTokens = sentence.get(TokensAnnotation.class);
 
 				// Dependency should have Token rather than String
-				for (CoreLabel token : sentence.get(TokensAnnotation.class)) { // order
+				for (CoreLabel token : nlpTokens) { // order
 																				// needs
 																				// to
 																				// be
@@ -136,8 +142,27 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 				for (Tree subtree : tree) { 
 			    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+			      
+			      String nounPhrase = "";
+			      // Find the matching token and get the lemma.  Code based on
+			      // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+			      for(Tree leaf : subtree.getLeaves()) {
+			        if(leaf.label() instanceof CoreLabel) {
+			          CoreLabel label = (CoreLabel) leaf.label();
+			          for(CoreLabel l : nlpTokens) {
+			            if(l.beginPosition() == label.beginPosition() &&
+			                 l.endPosition() == label.endPosition()) {
+			              nounPhrase += " " + l.get(LemmaAnnotation.class);
+			              break;
+			            }
+			          }
+			        }
+			      }
+			      
+			      //System.out.println(nounPhrase);
+			      /*
 			      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-			      // System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+			      */
 			      NounPhrase nn=new NounPhrase(jCas);
 			      nn.setText(nounPhrase);
 			      phraseList.add(nn);
@@ -262,14 +287,14 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 			Dependency dep = new Dependency(aJCas);
 
 			Token governorToken = new Token(aJCas);
-			governorToken.setText(edge.getGovernor().originalText());
+			governorToken.setText(edge.getGovernor().lemma());
 			governorToken.setPos(edge.getGovernor().tag());
 			governorToken.setNer(edge.getGovernor().ner());
 			governorToken.addToIndexes();
 			dep.setGovernor(governorToken);
-
+			
 			Token dependentToken = new Token(aJCas);
-			dependentToken.setText(edge.getDependent().originalText());
+			dependentToken.setText(edge.getDependent().lemma());
 			dependentToken.setPos(edge.getDependent().tag());
 			dependentToken.setNer(edge.getDependent().ner());
 			dependentToken.addToIndexes();
