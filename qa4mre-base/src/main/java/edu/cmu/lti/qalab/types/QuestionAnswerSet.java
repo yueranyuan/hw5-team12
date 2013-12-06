@@ -6,7 +6,6 @@ package edu.cmu.lti.qalab.types;
 import org.apache.uima.jcas.JCas; 
 import org.apache.uima.jcas.JCasRegistry;
 import org.apache.uima.jcas.cas.TOP_Type;
-
 import org.apache.uima.jcas.cas.FSList;
 import org.apache.uima.jcas.tcas.Annotation;
 
@@ -132,7 +131,8 @@ public class QuestionAnswerSet extends Annotation {
   public void setPreAnswer(String v) {
     if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_preAnswer == null)
       jcasType.jcas.throwFeatMissing("preAnswer", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
-    jcasType.ll_cas.ll_setStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer, v);}    
+    jcasType.ll_cas.ll_setStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer, v);}
+
   }
 
     

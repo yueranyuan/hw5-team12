@@ -163,34 +163,33 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
 
-				ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
 				for (Tree subtree : tree) { 
-                    if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
-                      
-                      String nounPhrase = "";
-                      // Find the matching token and get the lemma.  Code based on
-                      // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
-                      for(Tree leaf : subtree.getLeaves()) {
-                        if(leaf.label() instanceof CoreLabel) {
-                          CoreLabel label = (CoreLabel) leaf.label();
-                          for(CoreLabel l : nlpTokens) {
-                            if(l.beginPosition() == label.beginPosition() &&
-                                 l.endPosition() == label.endPosition()) {
-                              nounPhrase += " " + l.get(LemmaAnnotation.class);
-                              break;
-                            }
-                          }
-                        }
-                      }
-                      
-                      //System.out.println(nounPhrase);
-                      /*
-                      String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-                      */
-                      NounPhrase nn=new NounPhrase(jCas);
-                      nn.setText(nounPhrase);
-                      phraseList.add(nn);
-                    }
+          if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+            
+            String nounPhrase = "";
+            // Find the matching token and get the lemma.  Code based on
+            // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+            for(Tree leaf : subtree.getLeaves()) {
+              if(leaf.label() instanceof CoreLabel) {
+                CoreLabel label = (CoreLabel) leaf.label();
+                for(CoreLabel l : nlpTokens) {
+                  if(l.beginPosition() == label.beginPosition() &&
+                       l.endPosition() == label.endPosition()) {
+                    nounPhrase += " " + l.get(LemmaAnnotation.class);
+                    break;
+                  }
+                }
+              }
+            }
+            
+            //System.out.println(nounPhrase);
+            /*
+            String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+            */
+            NounPhrase nn=new NounPhrase(jCas);
+            nn.setText(nounPhrase);
+            phraseList.add(nn);
+          }
 				}
 				FSList fsPhraseList = Utils.createNounPhraseList(jCas,
 						phraseList);

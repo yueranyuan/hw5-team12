@@ -67,7 +67,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			// pre-select choice
 			String preChoice = "";
 			try{
-				preChoice = qaSet.get(i).getPreAnswer();
+				preChoice = (qaSet.get(i)).getPreAnswer();
 				// if pre-selected, then skip the next candSent part
 				if (preChoice != null){
 					total++;
