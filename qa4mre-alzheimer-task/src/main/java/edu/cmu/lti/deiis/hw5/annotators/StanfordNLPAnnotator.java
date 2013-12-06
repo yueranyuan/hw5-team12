@@ -3,8 +3,10 @@ package edu.cmu.lti.deiis.hw5.annotators;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -24,10 +26,14 @@ import edu.cmu.lti.qalab.types.Sentence;
 import edu.cmu.lti.qalab.types.TestDocument;
 import edu.cmu.lti.qalab.types.Token;
 import edu.cmu.lti.qalab.utils.Utils;
+import edu.stanford.nlp.dcoref.CorefChain;
+import edu.stanford.nlp.dcoref.CorefChain.CorefMention;
+import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefChainAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.Label;
@@ -50,7 +56,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 			throws ResourceInitializationException {
 		super.initialize(context);
 		Properties props = new Properties();
-		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse");// ,
+		props.put("annotators", "tokenize, ssplit, pos, lemma, ner, parse, dcoref");// ,
 																			// ssplit
 		stanfordAnnotator = new StanfordCoreNLP(props);
 		
@@ -83,6 +89,43 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				e.printStackTrace();
 				return;
 			}
+			
+			
+			HashMap<Integer, String> corefMap = new HashMap<Integer, String>();
+      Map<Integer, CorefChain> coref = document.get(CorefChainAnnotation.class);
+
+      for(Map.Entry<Integer, CorefChain> entry : coref.entrySet()) {
+          CorefChain c = entry.getValue();
+          
+          //this is because it prints out a lot of self references which aren't that useful
+          if(c.getMentionsInTextualOrder().size() <= 1)
+              continue;
+
+          CorefMention cm = c.getRepresentativeMention();
+          String clust = "";
+          List<CoreLabel> tks = document.get(SentencesAnnotation.class).get(cm.sentNum-1).get(TokensAnnotation.class);
+          for(int k = cm.startIndex-1; k < cm.endIndex-1; k++)
+              clust += tks.get(k).get(TextAnnotation.class) + " ";
+          clust = clust.trim();
+          System.out.println("representative mention: \"" + clust + "\" is mentioned by:");
+          
+          for(CorefMention m : c.getMentionsInTextualOrder()){
+              String clust2 = "";
+              tks = document.get(SentencesAnnotation.class).get(m.sentNum-1).get(TokensAnnotation.class);
+              corefMap.put(m.sentNum, clust);
+              for(int k = m.startIndex-1; k < m.endIndex-1; k++)
+                  clust2 += tks.get(k).get(TextAnnotation.class) + " ";
+              clust2 = clust2.trim();
+              //don't need the self mention
+              if(clust.equals(clust2))
+                  continue;
+
+              System.out.println("\t" + clust2);
+          }
+      }
+			
+			
+			
 			List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 			// SourceDocument sourcecDocument=(SourceDocument)
 			// jCas.getAnnotationIndex(SourceDocument.type);
@@ -99,7 +142,10 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				ArrayList<Token> tokenList = new ArrayList<Token>();
 				List<CoreLabel> nlpTokens = sentence.get(TokensAnnotation.class);
 
-				// Dependency should have Token rather than String
+				
+				
+        // Dependency should have Token rather than String
+        int sentenceIndex=1;
 				for (int j = 0; j < sentence.get(TokensAnnotation.class).size(); j++) { // order
 																				// needs
 																				// to
@@ -149,6 +195,13 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					//System.out.println(orgText+"-"+pos+"-"+lemma);
 					tokenList.add(annToken);
 				}
+				
+				if(corefMap.containsKey(sentenceIndex)){
+				  NounPhrase corefNoun = new NounPhrase(jCas);
+				  corefNoun.setText(corefMap.get(sentenceIndex));
+				  phraseList.add(corefNoun);
+				}
+				sentenceIndex++;
 
 				FSList fsTokenList = this.createTokenList(jCas, tokenList);
 				fsTokenList.addToIndexes();
