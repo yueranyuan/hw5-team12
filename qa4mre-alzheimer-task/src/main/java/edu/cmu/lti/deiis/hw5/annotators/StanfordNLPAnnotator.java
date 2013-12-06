@@ -2,6 +2,7 @@ package edu.cmu.lti.deiis.hw5.annotators;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -95,6 +96,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				ArrayList<Token> tokenList = new ArrayList<Token>();
 
 				// Dependency should have Token rather than String
+				HashSet<String> strSet = new HashSet<String>();
 				for (int j = 0; j < sentence.get(TokensAnnotation.class).size(); j++) { // order
 																				// needs
 																				// to
@@ -133,11 +135,12 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 						
 						ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
 						for (String str : syn){
-							if (str == "be")
-								continue;
-							sn = new NounPhrase(jCas);
-							sn.setText(str);
-							phraseList.add(sn);
+							if (!strSet.contains(str) && str != "be"){
+								strSet.add(str);
+								sn = new NounPhrase(jCas);
+								sn.setText(str);
+								phraseList.add(sn);
+							}
 						}
 					}
 					
