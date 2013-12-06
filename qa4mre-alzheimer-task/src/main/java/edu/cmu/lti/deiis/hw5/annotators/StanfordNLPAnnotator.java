@@ -126,29 +126,33 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 					Token annToken = new Token(jCas);
 					annToken.setBegin(begin);
 					annToken.setEnd(end);
-					annToken.setText(orgText);
+					annToken.setText(lemma);
 					annToken.setPos(pos);
 					annToken.setNer(ne);
 					annToken.addToIndexes();
-
+					
+					
 					// add verbs
 					if (pos.startsWith("VB")){
 						// ignore 'was' before the passive verb
 						if (j!= sentence.get(TokensAnnotation.class).size()-1)
 							if (sentence.get(TokensAnnotation.class).get(j+1).get(PartOfSpeechAnnotation.class).startsWith("VBN"))
 								continue;
-						NounPhrase nn = new NounPhrase(jCas);
-						nn.setText(lemma);
-						phraseList.add(nn);
+						NounPhrase sn = new NounPhrase(jCas);
+						sn.setText(lemma);
+						phraseList.add(sn);
+						
 						ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
 						for (String str : syn){
-							NounPhrase sn = new NounPhrase(jCas);
+							if (str == "be")
+								continue;
+							sn = new NounPhrase(jCas);
 							sn.setText(str);
 							phraseList.add(sn);
 						}
 					}
 					
-					System.out.println(orgText+"-"+pos+"-"+lemma);
+					//System.out.println(orgText+"-"+pos+"-"+lemma);
 					tokenList.add(annToken);
 				}
 
@@ -169,18 +173,20 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 				// Add noun phrases to index
 				Tree tree = sentence.get(TreeAnnotation.class);
 
-				
+				/*
 				for (Tree subtree : tree) {
 					if (subtree.label().value().equals("NP")
 							|| subtree.label().value().equals("VP")) {
 						String nounPhrase = edu.stanford.nlp.ling.Sentence
 								.listToString(subtree.yield());
 						// System.out.println(edu.stanford.nlp.ling.Sentence.listToString(subtree.yield()));
+						if (nounPhrase.length() > 20)
+							continue;	// skip too long phrases
 						NounPhrase nn = new NounPhrase(jCas);
 						nn.setText(nounPhrase);
 						phraseList.add(nn);
 					}
-				}
+				}*/
 				FSList fsPhraseList = Utils.createNounPhraseList(jCas,
 						phraseList);
 				fsPhraseList.addToIndexes(jCas);

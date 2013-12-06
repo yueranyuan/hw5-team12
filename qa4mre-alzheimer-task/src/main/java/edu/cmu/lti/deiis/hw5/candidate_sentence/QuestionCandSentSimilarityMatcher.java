@@ -78,6 +78,10 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 				SolrQuery solrQuery = new SolrQuery();
 				solrQuery.add("fq", "docid:" + testDocId);
 				solrQuery.add("q", searchQuery);
+				// prioritize
+				//solrQuery.add("defType", "dismax");
+				//solrQuery.add("qf", "features^20.0+text^0.3");
+				
 				solrQuery.add("rows", String.valueOf(TOP_SEARCH_RESULTS));
 				solrQuery.setFields("*", "score");
 
@@ -188,10 +192,12 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 		// Add choice NER
 		ArrayList<NounPhrase> choiceNouns = Utils.fromFSListToCollection(
 				answer.getNounPhraseList(), NounPhrase.class);
+		System.out.println("adding nounphrase to solr");
 		for (int i = 0; i < choiceNouns.size(); i++) {
 			solrQuery += "nounphrases:\"" + choiceNouns.get(i).getText()
 					+ "\" ";
 		}
+		System.out.println(solrQuery);
 
 		ArrayList<NER> neList = Utils.fromFSListToCollection(
 				question.getNerList(), NER.class);
@@ -246,7 +252,8 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 		}
 
 		solrQuery = solrQuery.trim();
-
+		System.out.println("return solrQuery:");
+		System.out.println(solrQuery);
 		return solrQuery;
 	}
 
