@@ -101,6 +101,7 @@ public class SolrIndexer extends JCasAnnotator_ImplBase {
 				for (int j = 0; j < namedEntities.size(); j++) {
 					//NER ner=namedEntities.get(j);
 					neList.add(namedEntities.get(j).getText());
+					System.out.println("NERS: "+namedEntities.get(j).getText());
 					/*ArrayList<Synonym>synList=Utils.fromFSListToCollection(ner.getSynonyms(),Synonym.class);
 					for(int k=0;k<synList.size();k++){
 						synonymList.add(synList.get(k).getText());
@@ -109,6 +110,7 @@ public class SolrIndexer extends JCasAnnotator_ImplBase {
 				indexMap.put("namedentities", neList);
 				//indexMap.put("synonyms",synonymList);
 
+				
 				FSList fsDependencies = sent.getDependencyList();
 				if (fsDependencies != null) {
 				  ArrayList<Dependency> dependencies = Utils
@@ -120,6 +122,7 @@ public class SolrIndexer extends JCasAnnotator_ImplBase {
 				    String gov = dependencies.get(j).getGovernor().getText();
 				    String dep = dependencies.get(j).getDependent().getText();
 				    String depText = rel + "(" + gov + "," + dep + ")";
+				    System.out.println("DEP: "+depText);
 				    depList.add(depText);
 				    System.out.println("FINAL " + depText);
 				  }
