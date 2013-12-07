@@ -113,12 +113,10 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 					CandidateAnswer candAns = candAnswerList.get(j);
 					String answer = candAns.getText();
 					
-<<<<<<< HEAD
-					if (answer == "None of the above")
-						continue;
+					if (answer.equals("none of the above")) {
+					  continue;
+					}
 					
-=======
->>>>>>> 5b9da939f107064913e6b28b760af74a4146367c
 					double totalScore = candAns.getSimilarityScore()
 							+ candAns.getSynonymScore() + candAns.getPMIScore() + 
 							candAns.getTypeMatchScore();
@@ -143,8 +141,8 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 				if (existingVal == null) {
 					existingVal = new Double(0.0);
 				}
-				if (maxScore/total4Score < 0.4)
-					selectedAnswer = "None of the above";
+				//if (maxScore/total4Score < 0.4)
+					//selectedAnswer = "None of the above";
 				
 				//hshAnswer.put(selectedAnswer, existingVal + 1);
 				// Modified by Haibo
@@ -158,11 +156,10 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("here 1 " + typeMatchCount);
+			
 			if (topK == 0) {
-			  bestChoice = "None of the above";
+			  bestChoice = "none of the above";
 			} else if (typeMatchCount != topK) {
-			  System.out.println("here 2");
   			// see if "none of the above" is the best answer
   			Iterator<Entry<String, Double>> it = PMIHash.entrySet().iterator();
   			double PMIsum = 0.0;
@@ -170,7 +167,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
   	        Entry<String, Double> pairs = it.next();
   	        PMIsum += pairs.getValue();
   	    }
-  	    System.out.println("here 3");
+  	    
   	    it = PMIHash.entrySet().iterator();
   	    boolean noneOf = true;
         while (it.hasNext()) {
@@ -180,11 +177,9 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
           }
         }
         if (noneOf) {
-          bestChoice = "None of the above";
+          bestChoice = "none of the above";
         }
-        System.out.println("here 4");
 			}
-			System.out.println("here 5");
       // select the best answer
       for (int j = 0; j < choiceList.size(); j++) {
         Answer answer = choiceList.get(j);

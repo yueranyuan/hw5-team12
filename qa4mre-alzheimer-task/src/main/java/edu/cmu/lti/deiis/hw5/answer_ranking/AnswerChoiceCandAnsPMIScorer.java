@@ -159,7 +159,7 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 					double score1 = 0.0;
 					Answer answer = choiceList.get(j);
 
-					if (answer.getText().equals("None of the above")) {
+					if (answer.getText().equals("none of the above")) {
             score1 = 0.0;
           } else {
   					for (int k = 0; k < candSentNouns.size(); k++) {
