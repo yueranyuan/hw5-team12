@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
+ * Updated by JCasGen Fri Dec 06 22:29:59 EST 2013
  * @generated */
 public class Question_Type extends Annotation_Type {
   /** @generated */
@@ -151,6 +151,24 @@ public class Question_Type extends Annotation_Type {
     ll_cas.ll_setRefValue(addr, casFeatCode_tokenList, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_limiterList;
+  /** @generated */
+  final int     casFeatCode_limiterList;
+  /** @generated */ 
+  public int getLimiterList(int addr) {
+        if (featOkTst && casFeat_limiterList == null)
+      jcas.throwFeatMissing("limiterList", "edu.cmu.lti.qalab.types.Question");
+    return ll_cas.ll_getRefValue(addr, casFeatCode_limiterList);
+  }
+  /** @generated */    
+  public void setLimiterList(int addr, int v) {
+        if (featOkTst && casFeat_limiterList == null)
+      jcas.throwFeatMissing("limiterList", "edu.cmu.lti.qalab.types.Question");
+    ll_cas.ll_setRefValue(addr, casFeatCode_limiterList, v);}
+    
+  
 
 
 
@@ -183,6 +201,10 @@ public class Question_Type extends Annotation_Type {
  
     casFeat_tokenList = jcas.getRequiredFeatureDE(casType, "tokenList", "uima.cas.FSList", featOkTst);
     casFeatCode_tokenList  = (null == casFeat_tokenList) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_tokenList).getCode();
+
+ 
+    casFeat_limiterList = jcas.getRequiredFeatureDE(casType, "limiterList", "uima.cas.FSList", featOkTst);
+    casFeatCode_limiterList  = (null == casFeat_limiterList) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_limiterList).getCode();
 
   }
 }

@@ -52,191 +52,74 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 																			// ssplit
 		stanfordAnnotator = new StanfordCoreNLP(props);
 	}
+	
+	public ArrayList<Answer> annotateChoiceList(JCas jCas, ArrayList<Answer> choiceList) {
+	  return annotateChoiceList(jCas, choiceList,"");
+	}
+	
+	public ArrayList<Answer> annotateChoiceList(JCas jCas, ArrayList<Answer> choiceList, String sq) {
+    ArrayList<Answer> newChoiceList = new ArrayList<Answer>(choiceList.size());
+	  for (int j = 0; j < choiceList.size(); j++) {
+      Answer answer = choiceList.get(j);
+      Annotation document = new Annotation(answer.getText() + " " + sq);
+      try {
+        // System.out.println("Entering stanford annotation");
+        stanfordAnnotator.annotate(document);
+        // System.out.println("Out of stanford annotation");
+      } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+      }
 
-	@Override
-	public void process(JCas jCas) throws AnalysisEngineProcessException {
+      List<CoreMap> answers = document.get(SentencesAnnotation.class);
 
-		TestDocument testDoc = (TestDocument) Utils
-				.getTestDocumentFromCAS(jCas);
+      for (CoreMap ans : answers) {
 
-		String id = testDoc.getId();
-		ArrayList<Question> questionList = Utils
-				.getQuestionListFromTestDocCAS(jCas);
-		ArrayList<ArrayList<Answer>> answerList = Utils
-				.getAnswerListFromTestDocCAS(jCas);
+        String ansText = ans.toString();
+        //Answer annAnswer = new Answer(jCas);
+        ArrayList<Token> tokenList = new ArrayList<Token>();
+        List<CoreLabel> nlpTokens = ans.get(TokensAnnotation.class);
 
-		for (int i = 0; i < answerList.size(); i++) {
+        // Dependency should have Token rather than String
+        for (CoreLabel token : nlpTokens) { // order
+                                      // needs
+                                      // to
+                                      // be
+                                      // considered
+          int begin = token.beginPosition();
 
-			ArrayList<Answer> choiceList = answerList.get(i);
-			for (int j = 0; j < choiceList.size(); j++) {
-				Answer answer = choiceList.get(j);
-				Annotation document = new Annotation(answer.getText());
-				try {
-					// System.out.println("Entering stanford annotation");
-					stanfordAnnotator.annotate(document);
-					// System.out.println("Out of stanford annotation");
-				} catch (Exception e) {
-					e.printStackTrace();
-					return;
-				}
+          int end = token.endPosition();
+          // System.out.println(begin + "\t" + end);
+          String orgText = token.originalText();
+          // this is the POS tag of the token
+          String pos = token.get(PartOfSpeechAnnotation.class);
+          // this is the NER label of the token
+          String ne = token.get(NamedEntityTagAnnotation.class);
+          
+          Token annToken = new Token(jCas);
+          annToken.setBegin(begin);
+          annToken.setEnd(end);
+          annToken.setText(orgText);
+          annToken.setPos(pos);
+          annToken.setNer(ne);
+          annToken.addToIndexes();
 
-				List<CoreMap> answers = document.get(SentencesAnnotation.class);
+          tokenList.add(annToken);
+        }
 
-				for (CoreMap ans : answers) {
-
-					String ansText = ans.toString();
-					//Answer annAnswer = new Answer(jCas);
-					ArrayList<Token> tokenList = new ArrayList<Token>();
-					List<CoreLabel> nlpTokens = ans.get(TokensAnnotation.class);
-
-					// Dependency should have Token rather than String
-					for (CoreLabel token : nlpTokens) { // order
-																				// needs
-																				// to
-																				// be
-																				// considered
-						int begin = token.beginPosition();
-
-						int end = token.endPosition();
-						// System.out.println(begin + "\t" + end);
-						String orgText = token.originalText();
-						// this is the POS tag of the token
-						String pos = token.get(PartOfSpeechAnnotation.class);
-						// this is the NER label of the token
-						String ne = token.get(NamedEntityTagAnnotation.class);
-						
-						Token annToken = new Token(jCas);
-						annToken.setBegin(begin);
-						annToken.setEnd(end);
-						annToken.setText(orgText);
-						annToken.setPos(pos);
-						annToken.setNer(ne);
-						annToken.addToIndexes();
-
-						tokenList.add(annToken);
-					}
-
-					FSList fsTokenList = this.createTokenList(jCas, tokenList);
-					fsTokenList.addToIndexes();
-					
-					// Add noun phrases to index
-	        Tree tree = ans.get(TreeAnnotation.class);
-	        
-	        ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
-	        for (Tree subtree : tree) { 
-	          if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
-	            String nounPhrase = "";
-	            // Find the matching token and get the lemma.  Code based on
-	            // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
-	            for(Tree leaf : subtree.getLeaves()) {
-	              if(leaf.label() instanceof CoreLabel) {
-	                CoreLabel label = (CoreLabel) leaf.label();
-	                for(CoreLabel l : nlpTokens) {
-	                  if(l.beginPosition() == label.beginPosition() &&
-	                       l.endPosition() == label.endPosition()) {
-	                    nounPhrase += " " + l.get(LemmaAnnotation.class);
-	                    break;
-	                  }
-	                }
-	              }
-	            }
-	            
-	            /*
-	            String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
-	            */
-	            NounPhrase nn=new NounPhrase(jCas);
-	            nn.setText(nounPhrase);
-	            phraseList.add(nn);
-	          }
-	        }
-	        FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
-	        fsPhraseList.addToIndexes(jCas);
-
-					answer.setId(String.valueOf(j));
-					answer.setBegin(tokenList.get(0).getBegin());// begin of
-																	// first
-																	// token
-					answer.setEnd(tokenList.get(tokenList.size() - 1)
-							.getEnd());// end
-										// of
-										// last
-										// token
-					answer.setText(ansText);
-					answer.setTokenList(fsTokenList);
-					answer.setNounPhraseList(fsPhraseList);
-					answer.addToIndexes();
-					choiceList.set(j, answer);
-
-					System.out.println("Answer no. " + j + " processed");
-				}
-				
-			}
-			answerList.set(i, choiceList);
-			
-		}
-
-		System.out.println("Total Questions: " + questionList.size());
-		int sentNo = 0;
-		for (int i = 0; i < questionList.size(); i++) {
-
-			String questionText = questionList.get(i).getText();
-			Annotation document = new Annotation(questionText);
-
-			try {
-				// System.out.println("Entering stanford annotation");
-				stanfordAnnotator.annotate(document);
-				// System.out.println("Out of stanford annotation");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-
-			// Although it is defined as list...this list will contain only one
-			// question
-			List<CoreMap> questions = document.get(SentencesAnnotation.class);
-
-			for (CoreMap question : questions) {
-
-				String qText = question.toString();
-				Question annQuestion = new Question(jCas);
-				ArrayList<Token> tokenList = new ArrayList<Token>();
-				List<CoreLabel> nlpTokens = question.get(TokensAnnotation.class);
-
-				// Dependency should have Token rather than String
-				for (CoreLabel token : nlpTokens) { // order
-																				// needs
-																				// to
-																				// be
-																				// considered
-					int begin = token.beginPosition();
-
-					int end = token.endPosition();
-					// System.out.println(begin + "\t" + end);
-					String orgText = token.originalText();
-					// this is the POS tag of the token
-					String pos = token.get(PartOfSpeechAnnotation.class);
-					// this is the NER label of the token
-					String ne = token.get(NamedEntityTagAnnotation.class);
-					Token annToken = new Token(jCas);
-					annToken.setBegin(begin);
-					annToken.setEnd(end);
-					annToken.setText(orgText);
-					annToken.setPos(pos);
-					annToken.setNer(ne);
-					annToken.addToIndexes();
-
-					tokenList.add(annToken);
-				}
-
-				FSList fsTokenList = this.createTokenList(jCas, tokenList);
-				fsTokenList.addToIndexes();
-				
-				// Add noun phrases to index
-        Tree tree = question.get(TreeAnnotation.class);
+        FSList fsTokenList = this.createTokenList(jCas, tokenList);
+        fsTokenList.addToIndexes();
+        
+        // Add noun phrases to index
+        Tree tree = ans.get(TreeAnnotation.class);
         
         ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
         for (Tree subtree : tree) { 
-          if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+          if (subtree.label().value().equals("NP") || 
+                  subtree.label().value().equals("VP") ||
+                  subtree.label().value().equals("NN") ||
+                  subtree.label().value().equals("NNS") ||
+                  subtree.label().value().equals("VB")) {
             String nounPhrase = "";
             // Find the matching token and get the lemma.  Code based on
             // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
@@ -253,7 +136,6 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
               }
             }
             
-            
             /*
             String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
             */
@@ -265,35 +147,273 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
         FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
         fsPhraseList.addToIndexes(jCas);
 
-				// this is the Stanford dependency graph of the current sentence
-				SemanticGraph dependencies = question
-						.get(CollapsedCCProcessedDependenciesAnnotation.class);
-				List<SemanticGraphEdge> depList = dependencies.edgeListSorted();
-				FSList fsDependencyList = this.createDependencyList(jCas,
-						depList);
-				fsDependencyList.addToIndexes();
-				// Dependency dependency = new Dependency(jCas);
-				// System.out.println("Dependencies: "+dependencies);
+        // this is the Stanford dependency graph of the current sentence
+        SemanticGraph dependencies = ans
+            .get(CollapsedCCProcessedDependenciesAnnotation.class);
+        List<SemanticGraphEdge> depList = dependencies.edgeListSorted();
+        FSList fsDependencyList = this.createDependencyList(jCas,
+            depList);
+        fsDependencyList.addToIndexes();
 
-				annQuestion.setId(String.valueOf(sentNo));
-				annQuestion.setBegin(tokenList.get(0).getBegin());// begin of
-																	// first
-																	// token
-				annQuestion
-						.setEnd(tokenList.get(tokenList.size() - 1).getEnd());// end
-																				// of
-																				// last
-																				// token
-				annQuestion.setText(questionText);
-				annQuestion.setTokenList(fsTokenList);
-				annQuestion.setDependencies(fsDependencyList);
-				annQuestion.setNounList(fsPhraseList);
-				annQuestion.addToIndexes();
-				questionList.set(i, annQuestion);
-				sentNo++;
-				System.out.println("Question no. " + sentNo + " processed");
-			}
-		}
+        answer = new Answer(jCas);
+        answer.setId(String.valueOf(j));
+        answer.setBegin(tokenList.get(0).getBegin());// begin of
+                                // first
+                                // token
+        answer.setEnd(tokenList.get(tokenList.size() - 1)
+            .getEnd());// end
+                  // of
+                  // last
+                  // token
+        answer.setText(ansText);
+        answer.setTokenList(fsTokenList);
+        answer.setNounPhraseList(fsPhraseList);
+        answer.setDependencies(fsDependencyList);
+        answer.addToIndexes();
+        newChoiceList.add(j, answer);
+
+        System.out.println("Answer no. " + j + " processed");
+      }
+      
+    }
+    return newChoiceList;
+	}
+	
+	public ArrayList<ArrayList<Answer>> annotateAnswerList(JCas jCas, ArrayList<ArrayList<Answer>> answerList) {
+	  
+	  return answerList;
+	}
+	
+	public String findSQ(Question origQuestion) {
+	  String questionText = origQuestion.getText();
+    Annotation document = new Annotation(questionText);
+    
+    try {
+      // System.out.println("Entering stanford annotation");
+      stanfordAnnotator.annotate(document);
+      // System.out.println("Out of stanford annotation");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    
+    List<CoreMap> questions = document.get(SentencesAnnotation.class);
+    CoreMap cm = null;
+    for (CoreMap question : questions) {
+      cm = question;
+      break;
+    }
+    
+    String SQ = null;
+    Tree tree = cm.get(TreeAnnotation.class);
+    for (Tree subtree : tree) { 
+      if (subtree.label().value().equals("SQ")) {
+         SQ = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+         break;
+      }
+    }
+    
+    return SQ;
+	}
+	
+	public FSList findAnswerLimiter(JCas jCas, Question origQuestion) {
+    String questionText = origQuestion.getText();
+    Annotation document = new Annotation(questionText);
+    
+    try {
+      // System.out.println("Entering stanford annotation");
+      stanfordAnnotator.annotate(document);
+      // System.out.println("Out of stanford annotation");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    
+    List<CoreMap> questions = document.get(SentencesAnnotation.class);
+    CoreMap cm = null;
+    for (CoreMap question : questions) {
+      cm = question;
+      break;
+    }
+    
+    ArrayList<NounPhrase> limiters = new ArrayList<NounPhrase>();
+    Tree tree = cm.get(TreeAnnotation.class);
+    for (Tree subtree : tree) { 
+      if (subtree.label().value().equals("WHNP")) {
+        if (subtree.numChildren() < 2) {
+          continue;
+        }
+        Tree phrase = subtree.getChild(1);
+        for (Tree subtree2 : phrase) {
+          if (subtree2.label().value().equals("NN") ||
+                  subtree2.label().value().equals("NP") ||
+                  subtree2.label().value().equals("NNS")) {
+            NounPhrase annLimiter = new NounPhrase(jCas);
+            annLimiter.setText(edu.stanford.nlp.ling.Sentence.listToString(subtree2.yield()));
+            annLimiter.addToIndexes();
+            limiters.add(annLimiter);
+          }
+        }
+        break;
+      }
+    }
+    
+    return Utils.fromCollectionToFSList(jCas, limiters);
+  }
+	
+	public Question parseQuestion(JCas jCas, Question origQuestion, int sentNo) {
+	  String questionText = origQuestion.getText();
+    Annotation document = new Annotation(questionText);
+
+    try {
+      // System.out.println("Entering stanford annotation");
+      stanfordAnnotator.annotate(document);
+      // System.out.println("Out of stanford annotation");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    // Although it is defined as list...this list will contain only one
+    // question
+    List<CoreMap> questions = document.get(SentencesAnnotation.class);
+
+    Question annQuestion = new Question(jCas);
+    for (CoreMap question : questions) {
+      String qText = question.toString();
+      ArrayList<Token> tokenList = new ArrayList<Token>();
+      List<CoreLabel> nlpTokens = question.get(TokensAnnotation.class);
+
+      // Dependency should have Token rather than String
+      for (CoreLabel token : nlpTokens) { // order
+                                      // needs
+                                      // to
+                                      // be
+                                      // considered
+        int begin = token.beginPosition();
+
+        int end = token.endPosition();
+        // System.out.println(begin + "\t" + end);
+        String orgText = token.originalText();
+        // this is the POS tag of the token
+        String pos = token.get(PartOfSpeechAnnotation.class);
+        // this is the NER label of the token
+        String ne = token.get(NamedEntityTagAnnotation.class);
+        Token annToken = new Token(jCas);
+        annToken.setBegin(begin);
+        annToken.setEnd(end);
+        annToken.setText(orgText);
+        annToken.setPos(pos);
+        annToken.setNer(ne);
+        annToken.addToIndexes();
+
+        tokenList.add(annToken);
+      }
+
+      FSList fsTokenList = this.createTokenList(jCas, tokenList);
+      fsTokenList.addToIndexes();
+      
+      // Add noun phrases to index
+      Tree tree = question.get(TreeAnnotation.class);
+      
+      ArrayList<NounPhrase>phraseList= new ArrayList<NounPhrase>();
+      for (Tree subtree : tree) { 
+        if (subtree.label().value().equals("NP") || 
+                subtree.label().value().equals("VP") ||
+                subtree.label().value().equals("NN") ||
+                subtree.label().value().equals("NNS") ||
+                subtree.label().value().equals("VB")) {
+          String nounPhrase = "";
+          // Find the matching token and get the lemma.  Code based on
+          // https://mailman.stanford.edu/pipermail/java-nlp-user/2011-June/001069.html
+          for(Tree leaf : subtree.getLeaves()) {
+            if(leaf.label() instanceof CoreLabel) {
+              CoreLabel label = (CoreLabel) leaf.label();
+              for(CoreLabel l : nlpTokens) {
+                if(l.beginPosition() == label.beginPosition() &&
+                     l.endPosition() == label.endPosition()) {
+                  nounPhrase += " " + l.get(LemmaAnnotation.class);
+                  break;
+                }
+              }
+            }
+          }
+          
+          /*
+          String nounPhrase = edu.stanford.nlp.ling.Sentence.listToString(subtree.yield());
+          */
+          NounPhrase nn=new NounPhrase(jCas);
+          nn.setText(nounPhrase);
+          phraseList.add(nn);
+        }
+      }
+      FSList fsPhraseList=Utils.createNounPhraseList(jCas, phraseList);
+      fsPhraseList.addToIndexes(jCas);
+
+      // this is the Stanford dependency graph of the current sentence
+      SemanticGraph dependencies = question
+          .get(CollapsedCCProcessedDependenciesAnnotation.class);
+      List<SemanticGraphEdge> depList = dependencies.edgeListSorted();
+      FSList fsDependencyList = this.createDependencyList(jCas,
+          depList);
+      fsDependencyList.addToIndexes();
+      // Dependency dependency = new Dependency(jCas);
+      // System.out.println("Dependencies: "+dependencies);
+
+      
+      FSList fsLimiters = findAnswerLimiter(jCas, origQuestion);
+      fsLimiters.addToIndexes();
+      
+      annQuestion.setId(String.valueOf(sentNo));
+      annQuestion.setBegin(tokenList.get(0).getBegin());// begin of
+                                // first
+                                // token
+      annQuestion
+          .setEnd(tokenList.get(tokenList.size() - 1).getEnd());// end
+                                      // of
+                                      // last
+                                      // token
+      annQuestion.setText(questionText);
+      annQuestion.setTokenList(fsTokenList);
+      annQuestion.setDependencies(fsDependencyList);
+      annQuestion.setNounList(fsPhraseList);
+      annQuestion.setLimiterList(fsLimiters);
+      annQuestion.addToIndexes();
+      System.out.println("Question no. " + sentNo + " processed");
+      
+    }
+	  
+    return annQuestion;
+	}
+	
+	public ArrayList<Question> parseQuestionList(JCas jCas, ArrayList<Question> questionList){
+    for (int i = 0; i < questionList.size(); i++) {
+      questionList.set(i, parseQuestion(jCas, questionList.get(i), i));
+    }
+    return questionList;
+	}
+
+	@Override
+	public void process(JCas jCas) throws AnalysisEngineProcessException {
+
+		TestDocument testDoc = (TestDocument) Utils
+				.getTestDocumentFromCAS(jCas);
+
+		String id = testDoc.getId();
+		ArrayList<Question> questionList = Utils
+				.getQuestionListFromTestDocCAS(jCas);
+		ArrayList<ArrayList<Answer>> answerList = Utils
+				.getAnswerListFromTestDocCAS(jCas);
+		ArrayList<ArrayList<Answer>> longAnswerList = new ArrayList<ArrayList<Answer>>(answerList.size());
+		for (int i = 0; i < questionList.size(); i++) {
+      questionList.set(i, parseQuestion(jCas, questionList.get(i), i));
+      String sq = findSQ(questionList.get(i));
+      answerList.set(i, annotateChoiceList(jCas, answerList.get(i)));
+      longAnswerList.add(i, annotateChoiceList(jCas, answerList.get(i), sq));
+    }
+
+		System.out.println("Total Questions: " + questionList.size());
+		
 		// FSList fsQuestionList = Utils.createQuestionList(jCas, questionList);
 		// fsQuestionList.addToIndexes();
 		ArrayList<QuestionAnswerSet> qaSet = Utils
@@ -303,6 +423,8 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 			qaSet.get(i).setQuestion(questionList.get(i));
 			FSList fsAnswerList=Utils.fromCollectionToFSList(jCas, answerList.get(i));
 			qaSet.get(i).setAnswerList(fsAnswerList);
+			FSList fsLongAnswerList=Utils.fromCollectionToFSList(jCas, longAnswerList.get(i));
+			qaSet.get(i).setLongAnswerList(fsLongAnswerList);
 			
 		}
 

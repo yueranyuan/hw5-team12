@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
- * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
+ * Updated by JCasGen Fri Dec 06 22:29:58 EST 2013
+ * XML source: /home/yueran/git/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class CandidateAnswer extends Annotation {
   /** @generated
@@ -168,6 +168,24 @@ public class CandidateAnswer extends Annotation {
     if (CandidateAnswer_Type.featOkTst && ((CandidateAnswer_Type)jcasType).casFeat_synonymScore == null)
       jcasType.jcas.throwFeatMissing("synonymScore", "edu.cmu.lti.qalab.types.CandidateAnswer");
     jcasType.ll_cas.ll_setDoubleValue(addr, ((CandidateAnswer_Type)jcasType).casFeatCode_synonymScore, v);}    
+   
+    
+  //*--------------*
+  //* Feature: typeMatchScore
+
+  /** getter for typeMatchScore - gets 
+   * @generated */
+  public double getTypeMatchScore() {
+    if (CandidateAnswer_Type.featOkTst && ((CandidateAnswer_Type)jcasType).casFeat_typeMatchScore == null)
+      jcasType.jcas.throwFeatMissing("typeMatchScore", "edu.cmu.lti.qalab.types.CandidateAnswer");
+    return jcasType.ll_cas.ll_getDoubleValue(addr, ((CandidateAnswer_Type)jcasType).casFeatCode_typeMatchScore);}
+    
+  /** setter for typeMatchScore - sets  
+   * @generated */
+  public void setTypeMatchScore(double v) {
+    if (CandidateAnswer_Type.featOkTst && ((CandidateAnswer_Type)jcasType).casFeat_typeMatchScore == null)
+      jcasType.jcas.throwFeatMissing("typeMatchScore", "edu.cmu.lti.qalab.types.CandidateAnswer");
+    jcasType.ll_cas.ll_setDoubleValue(addr, ((CandidateAnswer_Type)jcasType).casFeatCode_typeMatchScore, v);}    
   }
 
     

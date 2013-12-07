@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
+ * Updated by JCasGen Fri Dec 06 22:29:59 EST 2013
  * @generated */
 public class QuestionAnswerSet_Type extends Annotation_Type {
   /** @generated */
@@ -115,6 +115,24 @@ public class QuestionAnswerSet_Type extends Annotation_Type {
     ll_cas.ll_setStringValue(addr, casFeatCode_preAnswer, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_longAnswerList;
+  /** @generated */
+  final int     casFeatCode_longAnswerList;
+  /** @generated */ 
+  public int getLongAnswerList(int addr) {
+        if (featOkTst && casFeat_longAnswerList == null)
+      jcas.throwFeatMissing("longAnswerList", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    return ll_cas.ll_getRefValue(addr, casFeatCode_longAnswerList);
+  }
+  /** @generated */    
+  public void setLongAnswerList(int addr, int v) {
+        if (featOkTst && casFeat_longAnswerList == null)
+      jcas.throwFeatMissing("longAnswerList", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    ll_cas.ll_setRefValue(addr, casFeatCode_longAnswerList, v);}
+    
+  
 
 
 
@@ -139,6 +157,10 @@ public class QuestionAnswerSet_Type extends Annotation_Type {
  
     casFeat_preAnswer = jcas.getRequiredFeatureDE(casType, "preAnswer", "uima.cas.String", featOkTst);
     casFeatCode_preAnswer  = (null == casFeat_preAnswer) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_preAnswer).getCode();
+
+ 
+    casFeat_longAnswerList = jcas.getRequiredFeatureDE(casType, "longAnswerList", "uima.cas.FSList", featOkTst);
+    casFeatCode_longAnswerList  = (null == casFeat_longAnswerList) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_longAnswerList).getCode();
 
   }
 }

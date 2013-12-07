@@ -15,7 +15,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
+ * Updated by JCasGen Fri Dec 06 22:29:58 EST 2013
  * @generated */
 public class CandidateSentence_Type extends Annotation_Type {
   /** @generated */

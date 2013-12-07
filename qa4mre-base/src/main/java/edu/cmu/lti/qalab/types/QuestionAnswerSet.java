@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
- * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
+ * Updated by JCasGen Fri Dec 06 22:29:59 EST 2013
+ * XML source: /home/yueran/git/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class QuestionAnswerSet extends Annotation {
   /** @generated
@@ -131,8 +131,25 @@ public class QuestionAnswerSet extends Annotation {
   public void setPreAnswer(String v) {
     if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_preAnswer == null)
       jcasType.jcas.throwFeatMissing("preAnswer", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
-    jcasType.ll_cas.ll_setStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer, v);}
+    jcasType.ll_cas.ll_setStringValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_preAnswer, v);}    
+   
+    
+  //*--------------*
+  //* Feature: longAnswerList
 
+  /** getter for longAnswerList - gets 
+   * @generated */
+  public FSList getLongAnswerList() {
+    if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_longAnswerList == null)
+      jcasType.jcas.throwFeatMissing("longAnswerList", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    return (FSList)(jcasType.ll_cas.ll_getFSForRef(jcasType.ll_cas.ll_getRefValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_longAnswerList)));}
+    
+  /** setter for longAnswerList - sets  
+   * @generated */
+  public void setLongAnswerList(FSList v) {
+    if (QuestionAnswerSet_Type.featOkTst && ((QuestionAnswerSet_Type)jcasType).casFeat_longAnswerList == null)
+      jcasType.jcas.throwFeatMissing("longAnswerList", "edu.cmu.lti.qalab.types.QuestionAnswerSet");
+    jcasType.ll_cas.ll_setRefValue(addr, ((QuestionAnswerSet_Type)jcasType).casFeatCode_longAnswerList, jcasType.ll_cas.ll_getFSRef(v));}    
   }
 
     

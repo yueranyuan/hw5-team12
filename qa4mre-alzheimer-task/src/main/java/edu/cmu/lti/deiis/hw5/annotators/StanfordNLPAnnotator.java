@@ -182,7 +182,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
             sn.setText(lemma);
             phraseList.add(sn);
             
-            ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
+            ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "VB");
             for (String str : syn){
               if (str.length() < 5)
                 continue;
@@ -222,7 +222,11 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
 
         // add lemmatized phrases
         for (Tree subtree : tree) { 
-          if (subtree.label().value().equals("NP") || subtree.label().value().equals("VP")) {
+          if (subtree.label().value().equals("NP") ||
+                  subtree.label().value().equals("VP") ||
+                  subtree.label().value().equals("NN") ||
+                  subtree.label().value().equals("NNS") ||
+                  subtree.label().value().equals("VB")) {
             
             String nounPhrase = "";
             // Find the matching token and get the lemma.  Code based on

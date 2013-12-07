@@ -84,20 +84,23 @@
         <node>TextSegmenter</node>
         <node>StanfordSentenceAnnotator</node>
         <node>NoiseFilter</node>
-        <node>StanfordNLPAnnotator</node>
         <node>StanfordQuestionNLPAnnotator</node>
-        <node>ClearNLPAnnotator</node>
+        <node>StanfordNLPAnnotator</node>
         <node>PhraseAnnotator</node>
         <node>QuestionPhraseAnnotator</node>
         <node>NEAnnotator</node>
+        <node>QuestionNEAnnotator</node>
         <!-- <node>SynonymAnnotator</node>-->
         <!-- <node>QASynonymAnnotator</node>-->
-        <node>QuestionNEAnnotator</node>
         <node>SolrIndexer</node>
+        <node>QuestionCandSentSimilarityMatcher</node>
         <!-- <node>QuestionCandSentSynonymMatcher</node> -->        
         <!-- <node>QuestionCandSentDependencyMatcher</node>-->
+<<<<<<< HEAD
         <node>QuestionCandSentSimilarityMatcher</node>
         <node>AnswerChoiceCandAnsSimilarityScorer</node>
+=======
+>>>>>>> 5b9da939f107064913e6b28b760af74a4146367c
         <node>AnswerChoiceCandAnsPMIScorer</node>
         <node>AnswerSelectionByKCandVoting</node>
         <!--<node>AnswerSelectionByKCandVoting</node>-->
