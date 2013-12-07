@@ -166,15 +166,20 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 				
 				boolean noneOf = true;
 				System.out.println(PMIHash.size());
+				double maxPMI = 0.0;
 				for (String str: PMIHash.keySet()){
-					if (PMIHash.get(str) > PMIsum * 0.5) {
-						System.out.println("DA AN: " + str + " " + PMIHash.get(str) + " sum " + PMIsum);
-						noneOf = false;
-					}
+					if (PMIHash.get(str) > maxPMI)
+						maxPMI = PMIHash.get(str);
+					
 				}
-				if (noneOf) {
+				
+				System.out.println("DA AN: " + maxPMI / PMIsum);
+				if (maxPMI < PMIsum * 0.5 && maxPMI > PMIsum * 0.4) {
+					bestChoice = null;
+				} else if (maxPMI <= 0.4) {
 					bestChoice = "None of the above";
 				}
+				
 			}
 			// select the best answer
 			for (int j = 0; j < choiceList.size(); j++) {
