@@ -47,7 +47,7 @@ public class ClearNLPAnnotator extends JCasAnnotator_ImplBase {
 			throws ResourceInitializationException {
 		super.initialize(context);
 		try {
-      LoadModels();
+      //LoadModels();
     } catch (Exception e) {
       throw new ResourceInitializationException();
     }

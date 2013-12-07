@@ -27,11 +27,15 @@ public class MedicalOntology {
    * @return An array of parents in ascending order of relevance
    */
   public String[] FindParents(String name) {
-    name = name.toLowerCase();
-    if (!ontoMapNameToNum.containsKey(name)) {
+    name = name.toLowerCase().trim();
+    String num = "";
+    if (ontoMapNameToNum.containsKey(name)) {
+      num = ontoMapNameToNum.get(name);
+    } else if (ontoMapNameToNum.containsKey(name + "s")) {
+      num = ontoMapNameToNum.get(name + "s");
+    } else {
       return null;
     }
-    String num = ontoMapNameToNum.get(name);
     String[] toks = num.split(Pattern.quote("."));
     
     String[] parents = new String[toks.length - 1];
@@ -53,12 +57,16 @@ public class MedicalOntology {
     InputStream is = getStream("ontology/parsed_onto.xml");
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line;
+    
     try {
       while ((line = reader.readLine()) != null) { 
         String[] toks = line.split(":");
         if (toks.length == 2) {
           String num = toks[0].toLowerCase();
           String name = toks[1].toLowerCase();
+          if (name.equals("hormones")) {
+            name = "hormones";
+          }
           if (!ontoMapNumToName.containsKey(num)) {
             ontoMapNumToName.put(num, name);
           }

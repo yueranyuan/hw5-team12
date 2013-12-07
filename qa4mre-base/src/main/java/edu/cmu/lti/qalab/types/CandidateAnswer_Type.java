@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
+ * Updated by JCasGen Fri Dec 06 22:29:58 EST 2013
  * @generated */
 public class CandidateAnswer_Type extends Annotation_Type {
   /** @generated */
@@ -151,6 +151,24 @@ public class CandidateAnswer_Type extends Annotation_Type {
     ll_cas.ll_setDoubleValue(addr, casFeatCode_synonymScore, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_typeMatchScore;
+  /** @generated */
+  final int     casFeatCode_typeMatchScore;
+  /** @generated */ 
+  public double getTypeMatchScore(int addr) {
+        if (featOkTst && casFeat_typeMatchScore == null)
+      jcas.throwFeatMissing("typeMatchScore", "edu.cmu.lti.qalab.types.CandidateAnswer");
+    return ll_cas.ll_getDoubleValue(addr, casFeatCode_typeMatchScore);
+  }
+  /** @generated */    
+  public void setTypeMatchScore(int addr, double v) {
+        if (featOkTst && casFeat_typeMatchScore == null)
+      jcas.throwFeatMissing("typeMatchScore", "edu.cmu.lti.qalab.types.CandidateAnswer");
+    ll_cas.ll_setDoubleValue(addr, casFeatCode_typeMatchScore, v);}
+    
+  
 
 
 
@@ -183,6 +201,10 @@ public class CandidateAnswer_Type extends Annotation_Type {
  
     casFeat_synonymScore = jcas.getRequiredFeatureDE(casType, "synonymScore", "uima.cas.Double", featOkTst);
     casFeatCode_synonymScore  = (null == casFeat_synonymScore) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_synonymScore).getCode();
+
+ 
+    casFeat_typeMatchScore = jcas.getRequiredFeatureDE(casType, "typeMatchScore", "uima.cas.Double", featOkTst);
+    casFeatCode_typeMatchScore  = (null == casFeat_typeMatchScore) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_typeMatchScore).getCode();
 
   }
 }

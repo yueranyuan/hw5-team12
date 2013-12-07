@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
   <name>typeSystemDescriptor</name>
   <description/>
@@ -291,6 +290,12 @@
           <rangeTypeName>uima.cas.FSList</rangeTypeName>
           <elementType>edu.cmu.lti.qalab.types.Token</elementType>
         </featureDescription>
+      <featureDescription>
+          <name>limiterList</name>
+          <description/>
+          <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <elementType>edu.cmu.lti.qalab.types.NounPhrase</elementType>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -365,6 +370,12 @@
           <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+      <featureDescription>
+          <name>longAnswerList</name>
+          <description/>
+          <rangeTypeName>uima.cas.FSList</rangeTypeName>
+          <elementType>edu.cmu.lti.qalab.types.Answer</elementType>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -432,6 +443,11 @@
         </featureDescription>
         <featureDescription>
           <name>synonymScore</name>
+          <description/>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+      <featureDescription>
+          <name>typeMatchScore</name>
           <description/>
           <rangeTypeName>uima.cas.Double</rangeTypeName>
         </featureDescription>

@@ -12,8 +12,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Thu Dec 05 21:30:27 EST 2013
- * XML source: /Users/hbwang/Dropbox/cmu/sem3/11791-SE/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
+ * Updated by JCasGen Fri Dec 06 22:29:59 EST 2013
+ * XML source: /home/yueran/git/hw5-team12/qa4mre-base/src/main/resources/TypeSystemDescriptor.xml
  * @generated */
 public class Question extends Annotation {
   /** @generated
@@ -169,6 +169,24 @@ public class Question extends Annotation {
     if (Question_Type.featOkTst && ((Question_Type)jcasType).casFeat_tokenList == null)
       jcasType.jcas.throwFeatMissing("tokenList", "edu.cmu.lti.qalab.types.Question");
     jcasType.ll_cas.ll_setRefValue(addr, ((Question_Type)jcasType).casFeatCode_tokenList, jcasType.ll_cas.ll_getFSRef(v));}    
+   
+    
+  //*--------------*
+  //* Feature: limiterList
+
+  /** getter for limiterList - gets 
+   * @generated */
+  public FSList getLimiterList() {
+    if (Question_Type.featOkTst && ((Question_Type)jcasType).casFeat_limiterList == null)
+      jcasType.jcas.throwFeatMissing("limiterList", "edu.cmu.lti.qalab.types.Question");
+    return (FSList)(jcasType.ll_cas.ll_getFSForRef(jcasType.ll_cas.ll_getRefValue(addr, ((Question_Type)jcasType).casFeatCode_limiterList)));}
+    
+  /** setter for limiterList - sets  
+   * @generated */
+  public void setLimiterList(FSList v) {
+    if (Question_Type.featOkTst && ((Question_Type)jcasType).casFeat_limiterList == null)
+      jcasType.jcas.throwFeatMissing("limiterList", "edu.cmu.lti.qalab.types.Question");
+    jcasType.ll_cas.ll_setRefValue(addr, ((Question_Type)jcasType).casFeatCode_limiterList, jcasType.ll_cas.ll_getFSRef(v));}    
   }
 
     

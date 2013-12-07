@@ -3,6 +3,7 @@ package edu.cmu.lti.deiis.hw5.answer_selection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -88,15 +89,19 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			}
 			
 			HashMap<String, Double> hshAnswer = new HashMap<String, Double>();
-
-
+			
+			HashMap<String, Double> PMIHash = new HashMap<String, Double>();
+			
+			for (int j = 0; j < choiceList.size(); j++) {
+			  PMIHash.put(choiceList.get(j).getText(), 0.0);
+			}
+			
+			int typeMatchCount = 0;
 			
 			for (int c = 0; c < topK; c++) {
 
 				CandidateSentence candSent = candSentList.get(c);
 
-				
-				
 				ArrayList<CandidateAnswer> candAnswerList = Utils
 						.fromFSListToCollection(candSent.getCandAnswerList(),
 								CandidateAnswer.class);
@@ -107,10 +112,17 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 					CandidateAnswer candAns = candAnswerList.get(j);
 					String answer = candAns.getText();
 					
-					
-					
 					double totalScore = candAns.getSimilarityScore()
-							+ candAns.getSynonymScore() + candAns.getPMIScore();
+							+ candAns.getSynonymScore() + candAns.getPMIScore() + 
+							candAns.getTypeMatchScore();
+					if (candAns.getTypeMatchScore() > 0.0) {
+					  typeMatchCount ++;
+					  System.out.println("match");
+					} else {
+					  System.out.println("not match");
+					}
+					
+					PMIHash.put(candAns.getText(), PMIHash.get(candAns.getText() + candAns.getPMIScore()));
 					
 					System.out.println(answer + ", "+ String.valueOf(totalScore));
 					
@@ -135,9 +147,35 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			// select the best answer
-			for (int j = 0; j < choiceList.size(); j++) {
+			System.out.println("here 1 " + typeMatchCount);
+			if (topK == 0) {
+			  bestChoice = "None of the above";
+			} else if (typeMatchCount != topK) {
+			  System.out.println("here 2");
+  			// see if "none of the above" is the best answer
+  			Iterator<Entry<String, Double>> it = PMIHash.entrySet().iterator();
+  			double PMIsum = 0.0;
+  	    while (it.hasNext()) {
+  	        Entry<String, Double> pairs = it.next();
+  	        PMIsum += pairs.getValue();
+  	    }
+  	    System.out.println("here 3");
+  	    it = PMIHash.entrySet().iterator();
+  	    boolean noneOf = true;
+        while (it.hasNext()) {
+          Entry<String, Double> pairs = it.next();
+          if (pairs.getValue() > PMIsum * 0.5) {
+            noneOf = false;
+          }
+        }
+        if (noneOf) {
+          bestChoice = "None of the above";
+        }
+        System.out.println("here 4");
+			}
+			System.out.println("here 5");
+      // select the best answer
+      for (int j = 0; j < choiceList.size(); j++) {
         Answer answer = choiceList.get(j);
         if (answer.getText().equals(bestChoice)) {
           answer.setIsSelected(true);
@@ -145,6 +183,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
           break;
         }
       }
+	        
 			
 			FSList fsAnswerList = Utils.fromCollectionToFSList(aJCas, choiceList);
 			fsAnswerList.addToIndexes();
