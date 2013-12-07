@@ -24,6 +24,7 @@ public class TextSegmenter extends JCasAnnotator_ImplBase {
 			TestDocument testDoc = Utils.getTestDocumentFromCAS(jCas);
 			// String id = srcDoc.getId();
 			String docId = testDoc.getId();
+//			testDoc.g
 			System.out.println("################### DocId: " + docId+ "###########################");
 			
 			String docText = testDoc.getText();

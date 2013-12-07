@@ -44,8 +44,8 @@ public class QA4MRETestDocReader extends CollectionReader_ImplBase {
 	@Override
 	public void initialize() throws ResourceInitializationException {
 		try {
-			testFile = new File[]{new File("data/2013.xml")};
-			String xmlText = new Scanner(new File("data/2013.xml")).useDelimiter("\\A").next();
+			testFile = new File[]{new File("data/20141.xml")};
+			String xmlText = new Scanner(new File("data/20141.xml")).useDelimiter("\\A").next();
 			this.parseTestDocument(xmlText);
 		} catch (Exception e) {
 			e.printStackTrace();

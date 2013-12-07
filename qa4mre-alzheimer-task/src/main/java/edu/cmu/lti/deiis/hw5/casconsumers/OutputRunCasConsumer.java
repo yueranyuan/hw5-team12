@@ -24,6 +24,7 @@ import edu.cmu.lti.qalab.types.Answer;
 import edu.cmu.lti.qalab.types.Question;
 import edu.cmu.lti.qalab.types.QuestionAnswerSet;
 import edu.cmu.lti.qalab.types.TestDocument;
+import edu.cmu.lti.qalab.utils.Utils;
 
 public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 
@@ -33,7 +34,8 @@ public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 	double THRESHOLD = 4.0;
 	BufferedWriter out;
 
-
+	int testId=0;
+	
 	int correct = 0;
 	int unanswered = 0;
 	int total = 0;
@@ -111,7 +113,7 @@ public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 	@Override
 	public void processCas(CAS aCAS) throws ResourceProcessException {
 		// DEBUG System.out.println("!!!Entered here!!!");
-
+		System.out.println("nima0");
 		JCas jcas;
 		try {
 			jcas = aCAS.getJCas();
@@ -119,7 +121,7 @@ public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 			throw new ResourceProcessException(e);
 		}
 
-
+		System.out.println("nima01");
 		// serialize XCAS and write to output file
 		try {
 			writeToFile(jcas, out);
@@ -147,21 +149,23 @@ public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 	 *             if an error occurs generating the XML text
 	 */
 	private void writeToFile(JCas jcas, BufferedWriter bw) throws IOException {
-
-		FSIterator<Annotation> it = jcas.getAnnotationIndex().iterator();
+		System.out.println("nima1");
+		
+		TestDocument testDoc = Utils.getTestDocumentFromCAS(jcas);
+		testDoc.setReadingTestId("1");
 		StringBuffer sb = new StringBuffer();
-		int testId=1;
+		
+		FSIterator it = jcas.getAnnotationIndex(TestDocument.type).iterator();
+		TestDocument srcDoc = null;
 		while (it.hasNext()) {
-			Annotation an = (it.next());
-			// System.out.println(an);
-
-			if (an instanceof TestDocument) {
-				TestDocument doc = (TestDocument) an;
+			srcDoc = (TestDocument) it.next();
+			if (true) {
+				TestDocument doc = (TestDocument) srcDoc;
 				doc.setReadingTestId(String.valueOf(testId));
 				testId++;
 				//TBD: get reading-test id, such as r_id = doc.getReadingTestId()
-				System.out.println(doc.getReadingTestId());
-				out.write(String.format("\t<reading-test r_id=\"%d\">\n", Integer.parseInt(doc.getReadingTestId())));
+				System.out.println("nima2"+doc.getReadingTestId());
+				out.write(String.format("\t<reading-test r_id=\"%d\">\n", testId));
 				
 				FSList list = doc.getQaList();
 				boolean answered = false;
@@ -211,9 +215,11 @@ public class OutputRunCasConsumer extends CasConsumer_ImplBase {
 					
 					// do something with the next element
 					list = ((NonEmptyFSList) list).getTail();
+					
 				}
 				out.write("\t</reading-test>\n");
 			}
+			break;
 		}
 
 	}

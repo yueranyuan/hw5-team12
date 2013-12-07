@@ -155,7 +155,7 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 			}
 
 			if (topK == 0) {
-				bestChoice = "none of the above";
+				bestChoice = "None of the above";
 			} else if (typeMatchCount != topK) {
 				// see if "none of the above" is the best answer
 				double PMIsum = 0.0;
@@ -168,11 +168,12 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 				System.out.println(PMIHash.size());
 				for (String str: PMIHash.keySet()){
 					if (PMIHash.get(str) > PMIsum * 0.5) {
+						System.out.println("DA AN: " + str + " " + PMIHash.get(str) + " sum " + PMIsum);
 						noneOf = false;
 					}
 				}
 				if (noneOf) {
-					bestChoice = "none of the above";
+					bestChoice = "None of the above";
 				}
 			}
 			// select the best answer

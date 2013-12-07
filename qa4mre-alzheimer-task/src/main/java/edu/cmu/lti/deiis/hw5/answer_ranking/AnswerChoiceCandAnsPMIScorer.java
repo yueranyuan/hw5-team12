@@ -35,91 +35,93 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 
 	private SolrWrapper solrWrapper;
 	HashSet<String> hshStopWords = new HashSet<String>();
-	int K_CANDIDATES=5;
-	
+	int K_CANDIDATES = 5;
+
 	MedicalOntology ontology;
-	
+
 	@Override
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
 		String serverUrl = (String) context
 				.getConfigParameterValue("SOLR_SERVER_URL");
-		K_CANDIDATES=(Integer)context.getConfigParameterValue("K_CANDIDATES");
-		
+		K_CANDIDATES = (Integer) context
+				.getConfigParameterValue("K_CANDIDATES");
+
 		try {
 			this.solrWrapper = new SolrWrapper(serverUrl);
 			// loadStopWords(stopFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		ontology = new MedicalOntology();
 		System.out.println(ontology.FindParents("microglia")[0]);
 	}
-	
+
 	public double ScoreTerm(ArrayList<NounPhrase> limiters, String term) {
-	  double score = 0.0;
-	  for (int i = 0; i < limiters.size(); i++) {
-      if (term.equals(limiters.get(i).getText()) || term.equals(limiters.get(i).getText() + "s")) {
-        score += 1.0;
-      }
-	  }
-	  return score;
+		double score = 0.0;
+		for (int i = 0; i < limiters.size(); i++) {
+			if (term.equals(limiters.get(i).getText())
+					|| term.equals(limiters.get(i).getText() + "s")) {
+				score += 1.0;
+			}
+		}
+		return score;
 	}
-	
+
 	public double Score(ArrayList<NounPhrase> limiters, String[] terms) {
-    double score = 0.0;
-    for (int i = 0; i < terms.length; i++) {
-      score += ScoreTerm(limiters, terms[i]);
-    }
-    return score;
-  }
-	
+		double score = 0.0;
+		for (int i = 0; i < terms.length; i++) {
+			score += ScoreTerm(limiters, terms[i]);
+		}
+		return score;
+	}
+
 	public double Score(ArrayList<NounPhrase> limiters, String phrase) {
-    double score = 0.0;
-    phrase = phrase.trim();
-    String[] parents = ontology.FindParents(phrase);
-    System.out.println(phrase.trim());
-    if (parents == null) {
-      return score;
-    }
-    
-    score = 0.0;
-    
-    for (int i = 0; i < parents.length; i++) {
-      if (parents[i] != null) {
-        String[] toks = parents[i].split(" ");
-        double local_score = 0.0;
-        if (toks.length > 1) {
-          local_score = Score(limiters, toks);
-        }
-        local_score += 2 * ScoreTerm(limiters, parents[i]);
-        score += local_score * ((float) i / parents.length);
-      }
-    }
-    return score;
-  }
-	
-	public double Score(ArrayList<NounPhrase> limiters, ArrayList<NounPhrase> phrases) {
-	  double score = 0.0;
-	  for (int i = 0; i < phrases.size(); i++) {
-	    score += Score(limiters, phrases.get(i).getText());
-	  }
-	  return score;
+		double score = 0.0;
+		phrase = phrase.trim();
+		String[] parents = ontology.FindParents(phrase);
+		System.out.println(phrase.trim());
+		if (parents == null) {
+			return score;
+		}
+
+		score = 0.0;
+
+		for (int i = 0; i < parents.length; i++) {
+			if (parents[i] != null) {
+				String[] toks = parents[i].split(" ");
+				double local_score = 0.0;
+				if (toks.length > 1) {
+					local_score = Score(limiters, toks);
+				}
+				local_score += 2 * ScoreTerm(limiters, parents[i]);
+				score += local_score * ((float) i / parents.length);
+			}
+		}
+		return score;
+	}
+
+	public double Score(ArrayList<NounPhrase> limiters,
+			ArrayList<NounPhrase> phrases) {
+		double score = 0.0;
+		for (int i = 0; i < phrases.size(); i++) {
+			score += Score(limiters, phrases.get(i).getText());
+		}
+		return score;
 	}
 
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
 
 		TestDocument testDoc = Utils.getTestDocumentFromCAS(aJCas);
-		//String testDocId = testDoc.getId();
+		// String testDocId = testDoc.getId();
 		ArrayList<QuestionAnswerSet> qaSet = Utils
 				.getQuestionAnswerSetFromTestDocCAS(aJCas);
-		
 
 		for (int i = 0; i < qaSet.size(); i++) {
-		  HashMap<String, Double> typeScores = new HashMap<String, Double>();
+			HashMap<String, Double> typeScores = new HashMap<String, Double>();
 			Question question = qaSet.get(i).getQuestion();
 			System.out.println("Question: " + question.getText());
 			ArrayList<Answer> choiceList = Utils.fromFSListToCollection(qaSet
@@ -128,20 +130,20 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 					.fromFSListToCollection(qaSet.get(i)
 							.getCandidateSentenceList(),
 							CandidateSentence.class);
-			
-			ArrayList<NounPhrase> limiters = Utils.fromFSListToCollection(
-			        question.getLimiterList(), NounPhrase.class);
-			
-			for (int j = 0; j < choiceList.size(); j++) {
-        Answer answer = choiceList.get(j);
-        ArrayList<NounPhrase> answerPhrases = Utils.fromFSListToCollection(
-                answer.getNounPhraseList(), NounPhrase.class);
-        
-        double score2 = Score(limiters, answerPhrases);
-        score2 = Math.min(1.0, score2);
-        typeScores.put(answer.getText(), score2);
-			}
 
+			ArrayList<NounPhrase> limiters = Utils.fromFSListToCollection(
+					question.getLimiterList(), NounPhrase.class);
+
+			for (int j = 0; j < choiceList.size(); j++) {
+				Answer answer = choiceList.get(j);
+				ArrayList<NounPhrase> answerPhrases = Utils
+						.fromFSListToCollection(answer.getNounPhraseList(),
+								NounPhrase.class);
+
+				double score2 = Score(limiters, answerPhrases);
+				score2 = Math.min(1.0, score2);
+				typeScores.put(answer.getText(), score2);
+			}
 
 			int topK = Math.min(K_CANDIDATES, candSentList.size());
 			for (int c = 0; c < topK; c++) {
@@ -154,64 +156,71 @@ public class AnswerChoiceCandAnsPMIScorer extends JCasAnnotator_ImplBase {
 				ArrayList<NER> candSentNers = Utils.fromFSListToCollection(
 						candSent.getSentence().getNerList(), NER.class);
 
-				ArrayList<CandidateAnswer>candAnsList=new ArrayList<CandidateAnswer>();
+				ArrayList<CandidateAnswer> candAnsList = new ArrayList<CandidateAnswer>();
 				for (int j = 0; j < choiceList.size(); j++) {
 					double score1 = 0.0;
 					Answer answer = choiceList.get(j);
 
-					if (answer.getText().equals("none of the above")) {
-            score1 = 0.0;
-          } else {
-  					for (int k = 0; k < candSentNouns.size(); k++) {
-  						try {
-  							score1 += scoreCoOccurInSameDoc(candSentNouns
-  									.get(k).getText(), choiceList.get(j));
-  
-  						} catch (Exception e) {
-  							e.printStackTrace();
-  						}
-  					}
-  
-  					for (int k = 0; k < candSentNers.size(); k++) {
-  
-  						try {
-  							score1 += scoreCoOccurInSameDoc(candSentNers.get(k)
-  									.getText(), choiceList.get(j));
-  						} catch (Exception e) {
-  							e.printStackTrace();
-  						}
-  
-  					}
-          }
+					if (answer.getText().equals("None of the above")) {
+						score1 = 0.0;
+					} else {
+						for (int k = 0; k < candSentNouns.size(); k++) {
+							try {
+								score1 += scoreCoOccurInSameDoc(candSentNouns
+										.get(k).getText(), choiceList.get(j));
+
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+
+						for (int k = 0; k < candSentNers.size(); k++) {
+
+							try {
+								score1 += scoreCoOccurInSameDoc(candSentNers
+										.get(k).getText(), choiceList.get(j));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+						}
+					}
 
 					System.out.println(choiceList.get(j).getText() + "\t"
-							+ score1 + "\t" + typeScores.get(choiceList.get(j).getText()));
+							+ score1 + "\t"
+							+ typeScores.get(choiceList.get(j).getText()));
 
-					CandidateAnswer candAnswer=null;
-					if(candSent.getCandAnswerList()==null){
-						candAnswer=new CandidateAnswer(aJCas);
-					}else{
-						candAnswer=Utils.fromFSListToCollection(candSent.getCandAnswerList(),CandidateAnswer.class).get(j);//new CandidateAnswer(aJCas);;
+					CandidateAnswer candAnswer = null;
+					if (candSent.getCandAnswerList() == null) {
+						candAnswer = new CandidateAnswer(aJCas);
+					} else {
+						candAnswer = Utils.fromFSListToCollection(
+								candSent.getCandAnswerList(),
+								CandidateAnswer.class).get(j);// new
+																// CandidateAnswer(aJCas);;
 					}
 					candAnswer.setText(answer.getText());
 					candAnswer.setQId(answer.getQuestionId());
 					candAnswer.setChoiceIndex(j);
 					candAnswer.setPMIScore(score1);
-					candAnswer.setTypeMatchScore(typeScores.get(choiceList.get(j).getText()));
+					candAnswer.setTypeMatchScore(typeScores.get(choiceList.get(
+							j).getText()));
 					candAnsList.add(candAnswer);
 				}
-				FSList fsCandAnsList=Utils.fromCollectionToFSList(aJCas, candAnsList);
+				FSList fsCandAnsList = Utils.fromCollectionToFSList(aJCas,
+						candAnsList);
 				candSent.setCandAnswerList(fsCandAnsList);
 				candSentList.set(c, candSent);
 			}
 
 			System.out
 					.println("================================================");
-			FSList fsCandSentList=Utils.fromCollectionToFSList(aJCas, candSentList);
+			FSList fsCandSentList = Utils.fromCollectionToFSList(aJCas,
+					candSentList);
 			qaSet.get(i).setCandidateSentenceList(fsCandSentList);
 
 		}
-		FSList fsQASet=Utils.fromCollectionToFSList(aJCas, qaSet);
+		FSList fsQASet = Utils.fromCollectionToFSList(aJCas, qaSet);
 		testDoc.setQaList(fsQASet);
 
 	}
