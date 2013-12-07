@@ -33,6 +33,9 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 	String coreName;
 	String schemaName;
 	int TOP_SEARCH_RESULTS = 10;
+	String W1="1";
+	String W2="2";
+	String W3="3";
 
 	@Override
 	public void initialize(UimaContext context)
@@ -249,7 +252,7 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 			String gov = dependencies.get(j).getGovernor().getText();
 			String dep = dependencies.get(j).getDependent().getText();
 			String depText = rel + "(" + gov + "," + dep + ")";
-			solrQuery += "dependencies:\"" + depText + "\" ";
+			solrQuery += "dependencies:(\"" + depText + "\")^"+W3+" ";
 		}
 
 		solrQuery = solrQuery.trim();

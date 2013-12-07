@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Scanner;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -43,12 +44,8 @@ public class QA4MRETestDocReader extends CollectionReader_ImplBase {
 	@Override
 	public void initialize() throws ResourceInitializationException {
 		try {
-
-			File inputDir = new File(
-					(String) getConfigParameterValue("INPUT_DIR"));
-			testFile = inputDir.listFiles(new OnlyNXML("xml"));
-			System.out.println("Total files: " + testFile.length);
-			String xmlText = this.readTestFile();
+			testFile = new File[]{new File("data/2013.xml")};
+			String xmlText = new Scanner(new File("data/2013.xml")).useDelimiter("\\A").next();
 			this.parseTestDocument(xmlText);
 		} catch (Exception e) {
 			e.printStackTrace();

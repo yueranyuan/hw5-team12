@@ -386,14 +386,14 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 			Dependency dep = new Dependency(aJCas);
 
 			Token governorToken = new Token(aJCas);
-			governorToken.setText(edge.getGovernor().originalText());
+			governorToken.setText(edge.getGovernor().lemma());
 			governorToken.setPos(edge.getGovernor().tag());
 			governorToken.setNer(edge.getGovernor().ner());
 			governorToken.addToIndexes();
 			dep.setGovernor(governorToken);
 
 			Token dependentToken = new Token(aJCas);
-			dependentToken.setText(edge.getDependent().originalText());
+			dependentToken.setText(edge.getDependent().lemma());
 			dependentToken.setPos(edge.getDependent().tag());
 			dependentToken.setNer(edge.getDependent().ner());
 			dependentToken.addToIndexes();

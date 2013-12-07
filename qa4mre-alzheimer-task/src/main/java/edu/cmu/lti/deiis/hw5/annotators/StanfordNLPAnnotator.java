@@ -184,7 +184,7 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
             
             ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "");
             for (String str : syn){
-              if (str == "be")
+              if (str.length() < 5)
                 continue;
               sn = new NounPhrase(jCas);
               sn.setText(str);

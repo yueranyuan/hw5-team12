@@ -102,27 +102,33 @@ public class AnswerSelectionByKCandVoting extends JCasAnnotator_ImplBase {
 								CandidateAnswer.class);
 				String selectedAnswer = "";
 				double maxScore = Double.NEGATIVE_INFINITY;
+				double total4Score=0;
 				for (int j = 0; j < candAnswerList.size(); j++) {
 
 					CandidateAnswer candAns = candAnswerList.get(j);
 					String answer = candAns.getText();
 					
-					
+					if (answer == "None of the above")
+						continue;
 					
 					double totalScore = candAns.getSimilarityScore()
 							+ candAns.getSynonymScore() + candAns.getPMIScore();
 					
 					System.out.println(answer + ", "+ String.valueOf(totalScore));
-					
+					total4Score += totalScore;
 					if (totalScore > maxScore) {
 						maxScore = totalScore;
 						selectedAnswer = answer;
 					}
 				}
+				
 				Double existingVal = hshAnswer.get(selectedAnswer);
 				if (existingVal == null) {
 					existingVal = new Double(0.0);
 				}
+				if (maxScore/total4Score < 0.4)
+					selectedAnswer = "None of the above";
+				
 				//hshAnswer.put(selectedAnswer, existingVal + 1);
 				// Modified by Haibo
 				hshAnswer.put(selectedAnswer, existingVal + candSent.getRelevanceScore());

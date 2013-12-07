@@ -94,8 +94,11 @@ public class QuestionPhraseAnnotator extends JCasAnnotator_ImplBase{
 			String word=token.getText();
 			String pos=token.getPos();
 			System.out.println("Token: "+word+"/"+pos);
-			if(pos.startsWith("NN") || pos.startsWith("JJ") || pos.startsWith("CD")){
-				nounPhrase+=word+" ";
+			if(pos.startsWith("NN") || pos.startsWith("JJ") || pos.startsWith("CD") || 
+					pos.startsWith("VB")){
+				NounPhrase nn=new NounPhrase(jCas);
+				nn.setText(word);
+				nounPhraseList.add(nn);
 			}else{
 				nounPhrase=nounPhrase.trim();
 				if(!nounPhrase.equals("")){
