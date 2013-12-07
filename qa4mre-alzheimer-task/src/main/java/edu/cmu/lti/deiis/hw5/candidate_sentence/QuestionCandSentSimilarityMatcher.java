@@ -69,8 +69,6 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 				Question question = qaSet.get(i).getQuestion();
 				ArrayList<Answer> answers = Utils.fromFSListToCollection(qaSet
 						.get(i).getAnswerList(), Answer.class);
-				ArrayList<Answer> longAnswers = Utils.fromFSListToCollection(qaSet
-		            .get(i).getLongAnswerList(), Answer.class);
 				System.out
 						.println("========================================================");
 				System.out.println("Question: " + question.getText());
@@ -115,56 +113,55 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 					candidateSentList.add(candSent);
 					System.out.println(relScore + "\t" + sentence);
 				}
+
 				/*
 				// pre-select top answer
-				searchQuery = this.formSolrQuery(longAnswers.get(0));
+				searchQuery = this.formSolrQuery(question, answers.get(0));
 				solrQuery = new SolrQuery();
 				solrQuery.add("fq", "docid:" + testDocId);
 				solrQuery.add("q", searchQuery);
 				solrQuery.add("rows", String.valueOf(TOP_SEARCH_RESULTS));
 				solrQuery.setFields("*", "score");
 				results = solrWrapper.runQuery(solrQuery, TOP_SEARCH_RESULTS);
-				if (results.size() > 0) {
-  				SolrDocument doc = results.get(0);
-  				double preScore = Double.parseDouble(doc.get("score")
-  						.toString());
-  				int count = 1;
-  				String preChoice = answers.get(0).getText();
-  				System.out.println("---------------");
-  				System.out.println("0: "+preChoice+", "+preScore);
-  				System.out.println("-- "+doc.get("text").toString());
-  				for (int j = 1; j < answers.size(); j++) {
-  					searchQuery = this.formSolrQuery(longAnswers.get(j));
-  					solrQuery = new SolrQuery();
-  					solrQuery.add("fq", "docid:" + testDocId);
-  					solrQuery.add("q", searchQuery);
-  					solrQuery.add("rows", String.valueOf(TOP_SEARCH_RESULTS));
-  					solrQuery.setFields("*", "score");
-  					results = solrWrapper.runQuery(solrQuery,
-  							TOP_SEARCH_RESULTS);
-  					if (results == null || results.size() == 0){
-  						continue;
-  					}
-  					
-  					doc = results.get(0);
-  					double tempScore = Double.parseDouble(doc.get("score")
-  							.toString());
-  					System.out.println(j+": "+answers.get(j).getText()+", "+tempScore);
-  					System.out.println("-- "+doc.get("text").toString());
-  					if (tempScore > preScore) {
-  						preScore = tempScore;
-  						count = 1;
-  						preChoice = answers.get(j).getText();
-  					} else if (tempScore == preScore)
-  						count++;
-  				}
-  
-  				// if only one has a high score, prioritize it
-  				if (count == 1)
-  					qaSet.get(i).setPreAnswer(preChoice);
+				SolrDocument doc = results.get(0);
+				double preScore = Double.parseDouble(doc.get("score")
+						.toString());
+				int count = 1;
+				String preChoice = answers.get(0).getText();
+				System.out.println("---------------");
+				System.out.println("0: "+preChoice+", "+preScore);
+				System.out.println("-- "+doc.get("text").toString());
+				for (int j = 1; j < answers.size(); j++) {
+					searchQuery = this.formSolrQuery(question, answers.get(j));
+					solrQuery = new SolrQuery();
+					solrQuery.add("fq", "docid:" + testDocId);
+					solrQuery.add("q", searchQuery);
+					solrQuery.add("rows", String.valueOf(TOP_SEARCH_RESULTS));
+					solrQuery.setFields("*", "score");
+					results = solrWrapper.runQuery(solrQuery,
+							TOP_SEARCH_RESULTS);
+					if (results == null){
+						count = 0;break;
+					}
+						
+					doc = results.get(0);
+					double tempScore = Double.parseDouble(doc.get("score")
+							.toString());
+					System.out.println(j+": "+answers.get(j).getText()+", "+tempScore);
+					System.out.println("-- "+doc.get("text").toString());
+					if (tempScore > preScore) {
+						preScore = tempScore;
+						count = 1;
+						preChoice = answers.get(j).getText();
+					} else if (tempScore == preScore)
+						count++;
 				}
 
-				*/
+				// if only one has a high score, prioritize it
+				if (count == 1)
+					qaSet.get(i).setPreAnswer(preChoice);
+
+				*/ 
 				
 				FSList fsCandidateSentList = Utils.fromCollectionToFSList(
 						aJCas, candidateSentList);
@@ -228,36 +225,7 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 
 		return solrQuery;
 	}
-	
-	public String formSolrQuery(Answer answer) {
-	  String solrQuery = "";
 
-    ArrayList<NounPhrase> nounPhrases = Utils.fromFSListToCollection(
-        answer.getNounPhraseList(), NounPhrase.class);
-
-    for (int i = 0; i < nounPhrases.size(); i++) {
-      solrQuery += "nounphrases:\"" + nounPhrases.get(i).getText()
-          + "\" ";
-    }
-
-    // Add dependency
-    ArrayList<Dependency> dependencies = Utils.fromFSListToCollection(
-            answer.getDependencies(), Dependency.class);
-
-    for (int j = 0; j < dependencies.size(); j++) {
-      String rel = dependencies.get(j).getRelation();
-      String gov = dependencies.get(j).getGovernor().getText();
-      String dep = dependencies.get(j).getDependent().getText();
-      String depText = rel + "(" + gov + "," + dep + ")";
-      solrQuery += "dependencies:\"" + depText + "\" ";
-    }
-
-    solrQuery = solrQuery.trim();
-    System.out.println("return solrQuery:");
-    System.out.println(solrQuery);
-    return solrQuery;
-	}
-	
 	public String formSolrQuery(Question question) {
 		String solrQuery = "";
 
@@ -272,7 +240,7 @@ public class QuestionCandSentSimilarityMatcher extends JCasAnnotator_ImplBase {
 		ArrayList<NER> neList = Utils.fromFSListToCollection(
 				question.getNerList(), NER.class);
 		for (int i = 0; i < neList.size(); i++) {
-			solrQuery += "namedentities:\"" + neList.get(i).getText() + "\" ";
+			solrQuery += "namedentities:(\"" + neList.get(i).getText() + "\")^"+ W2+" ";
 		}
 
 		// Add dependency

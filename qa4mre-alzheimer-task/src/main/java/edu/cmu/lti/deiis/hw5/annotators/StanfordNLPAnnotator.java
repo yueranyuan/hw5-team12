@@ -182,14 +182,14 @@ public class StanfordNLPAnnotator extends JCasAnnotator_ImplBase {
             sn.setText(lemma);
             phraseList.add(sn);
             
-            ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "VB");
-            for (String str : syn){
-              if (str.length() < 5)
-                continue;
-              sn = new NounPhrase(jCas);
-              sn.setText(str);
-              phraseList.add(sn);
-            }
+//            ArrayList<String>syn = SynonymExpander.getSynonyms(lemma, "VB");
+//            for (String str : syn){
+//              if (str.length() < 5)
+//                continue;
+//              sn = new NounPhrase(jCas);
+//              sn.setText(str);
+//              phraseList.add(sn);
+//            }
           }
           
           //System.out.println(orgText+"-"+pos+"-"+lemma);

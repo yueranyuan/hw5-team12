@@ -155,7 +155,7 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
             depList);
         fsDependencyList.addToIndexes();
 
-        answer = new Answer(jCas);
+        //answer = new Answer(jCas);
         answer.setId(String.valueOf(j));
         answer.setBegin(tokenList.get(0).getBegin());// begin of
                                 // first
@@ -404,12 +404,12 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 				.getQuestionListFromTestDocCAS(jCas);
 		ArrayList<ArrayList<Answer>> answerList = Utils
 				.getAnswerListFromTestDocCAS(jCas);
-		ArrayList<ArrayList<Answer>> longAnswerList = new ArrayList<ArrayList<Answer>>(answerList.size());
+		//ArrayList<ArrayList<Answer>> longAnswerList = new ArrayList<ArrayList<Answer>>(answerList.size());
 		for (int i = 0; i < questionList.size(); i++) {
       questionList.set(i, parseQuestion(jCas, questionList.get(i), i));
       String sq = findSQ(questionList.get(i));
       answerList.set(i, annotateChoiceList(jCas, answerList.get(i)));
-      longAnswerList.add(i, annotateChoiceList(jCas, answerList.get(i), sq));
+      //longAnswerList.add(i, annotateChoiceList(jCas, answerList.get(i), sq));
     }
 
 		System.out.println("Total Questions: " + questionList.size());
@@ -423,8 +423,8 @@ public class StanfordQuestionNLPAnnotator extends JCasAnnotator_ImplBase {
 			qaSet.get(i).setQuestion(questionList.get(i));
 			FSList fsAnswerList=Utils.fromCollectionToFSList(jCas, answerList.get(i));
 			qaSet.get(i).setAnswerList(fsAnswerList);
-			FSList fsLongAnswerList=Utils.fromCollectionToFSList(jCas, longAnswerList.get(i));
-			qaSet.get(i).setLongAnswerList(fsLongAnswerList);
+			//FSList fsLongAnswerList=Utils.fromCollectionToFSList(jCas, longAnswerList.get(i));
+			//qaSet.get(i).setLongAnswerList(fsLongAnswerList);
 			
 		}
 
